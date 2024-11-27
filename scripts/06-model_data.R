@@ -45,19 +45,12 @@ data <- data %>%
   )
 
 # Build the Bayesian Logistic Regression model
-happiness_model <- brm(
-  happy_binary ~ marital + childs + age + degree + sex + satjob + realrinc,  # Predictor variables
+happiness_model <- stan_polr(
+  formula = as.factor(happy_binary) ~ marital + childs + age + degree + sex + satjob + realrinc,
   data = data,
-  family = bernoulli(link = "logit"),  # Logistic regression
-  prior = c(
-    prior(normal(0, 2), class = "b"),  # Prior for coefficients
-    prior(cauchy(0, 2), class = "Intercept")  # Prior for intercept
-  ),
-  iter = 2000,  # Total iterations
-  chains = 4,   # Number of MCMC chains
-  warmup = 1000,  # Warm-up iterations
-  cores = 4,    # Number of cores for parallel computation
-  seed = 123    # Random seed for reproducibility
+  method = "logistic", # Use logistic cumulative link model
+  prior = NULL, # Use default priors to simplify the model
+  prior_counts = NULL # Use default priors for the intercepts
 )
 
 # View model summary
@@ -66,8 +59,12 @@ summary(happiness_model)
 # Plot posterior distributions
 plot(happiness_model)
 
-# Check MCMC convergence
-mcmc_plot(happiness_model)
 
 # Posterior predictive checks
 pp_check(happiness_model)
+
+#### Save model ####
+saveRDS(
+  happiness_model,
+  file = "models/happiness_model.rds"
+)

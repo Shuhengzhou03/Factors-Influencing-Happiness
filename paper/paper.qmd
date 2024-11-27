@@ -26,6 +26,7 @@ library(scales)
 library(rstanarm)
 library(brms)
 library(knitr)
+library(bayesplot)
 
 # Load the dataset
 data <- read_parquet(here::here("data/02-analysis_data/cleaned_happiness_data.parquet"))
@@ -53,9 +54,7 @@ Through this model, the study aims to quantify the independent impact of each va
 
 # Data {#sec-data}
 
-## Overview
-
-### Data Source and Analysis Tools
+## Measurement
 
 The data used in this study was sourced from the [GSS Data Explorer](https://gssdataexplorer.norc.org/MyGSS) [@gssdataexplorer], an online platform maintained by NORC that provides a wide range of resources from the General Social Survey (GSS). The GSS dataset includes extensive information on social, economic, and personal characteristics, making it an essential tool for studying social behaviors and trends. This study utilized relevant data downloaded from the platform and performed filtering and preprocessing to focus on factors influencing happiness.
 
@@ -71,6 +70,7 @@ The entire process of data handling, analysis, modeling, and visualization was c
 - **`scales`** [@scales]: Improved chart readability by formatting scales and labels to enhance visual presentation.
 - **`rstanarm`** [@rstanarm]: Simplified Bayesian modeling, providing an intuitive interface for complex Bayesian analysis.
 - **`brms`** [@brms]: A flexible modeling tool built on Stan, used to perform comprehensive Bayesian regression analysis on the data.
+- **`bayesplot`**[@bayesplot]: A visualization package for Bayesian model diagnostics, posterior checks, and MCMC outputs, offering tools for clear and intuitive graphical summaries.
 
 Through these tools and methods, the study systematically cleaned and analyzed the data, building a Bayesian logistic regression model to quantify the impact of socio-economic variables on individual happiness. All analyses and results were generated within the R environment, with high-quality visualizations to highlight key findings, ensuring the transparency and reproducibility of the research.
 
@@ -98,32 +98,27 @@ data %>%
 
 @tbl-happiness_preview presents the first six rows from the cleaned dataset, focusing on socio-economic and personal variables that influence happiness. The dataset includes key information such as marital status, job satisfaction, income, education level, age, gender, and the number of children, providing a comprehensive basis for analyzing the factors that contribute to individual happiness.
 
-## Measurement
 	
 Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
 
-## Outcome variables
 
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
+## variables
+
+### Outcome Variables
+
+The primary focus of this analysis is the variable **`happy`**, which serves as the key outcome in understanding the factors influencing individual well-being. This variable captures self-reported happiness levels and is categorized into three distinct groups:
+
+- **Very happy**: Represents individuals who report a high level of happiness, often indicative of positive life circumstances and strong emotional well-being.
+- **Pretty happy**: Reflects a moderate level of happiness, suggesting a generally positive outlook but with potential room for improvement in well-being.
+- **Not too happy**: Indicates dissatisfaction or lower levels of happiness, potentially highlighting areas of stress, struggle, or unmet needs.
+
+### Predictor Variables
+
+**`age`**: Represents the respondent's age, measured in years.
 
 
+**`sex`**: Denotes the biological sex of the respondent, categorized as: **male** and **female**.
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
-
-```{r}
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-
-```
-
-Talk way more about it. 
-
-## Predictor variables
 
 **marital:** A categorical variable indicating an individual's marital status (e.g., "Married"). "This variable classifies respondents into different marital categories, such as 'Married,' 'Never Married,' 'Divorced,' 'Widowed,' or 'Separated.' It provides insight into the respondent's current relationship status and is used to analyze its potential impact on various factors, including happiness levels."
 
@@ -209,7 +204,7 @@ ggplot(data, aes(x = happy, y = childs, fill = happy)) +
 
 \newpage
 
-**degree:** A categorical variable indicating an individual's highest level of educational attainment (e.g., "Bachelor's"). "This variable classifies respondents into different education categories, such as 'Less than High School,' 'High School,' 'Bachelor's,' and 'Graduate.' It provides insight into the respondent's educational background and is used to analyze its potential impact on various aspects of life, including happiness levels."
+**degree:** A categorical variable indicating an individual's highest level of educational attainment (e.g., "Bachelor's"). "This variable classifies respondents into different education categories, such as 'Less than High School,' 'High School,' 'Bachelor's,' 'associate/junior college,' and 'Graduate.' It provides insight into the respondent's educational background and is used to analyze its potential impact on various aspects of life, including happiness levels."
 
 ```{r}
 #| echo: false
@@ -382,7 +377,6 @@ We also calculated the average predicted probability of being "very happy" acros
 
 # Results {#sec-result}
 
-Our results are summarized in @tbl-modelresults.
 
 ```{r}
 #| echo: false
@@ -393,6 +387,24 @@ Our results are summarized in @tbl-modelresults.
 
 happiness_model <-
   readRDS(file = here::here("models/happiness_model.rds"))
+
+data <- data %>%
+  filter(
+    !is.na(marital), 
+    !is.na(childs), 
+    !is.na(age), 
+    !is.na(degree), 
+    !is.na(sex), 
+    !is.na(happy), 
+    !is.na(satjob), 
+    !is.na(realrinc)
+  ) %>%
+  mutate(
+    happy_binary = ifelse(happy == "very happy", 1, 0),  # Binary target variable
+    age = scale(age),  # Standardize age
+    realrinc = scale(realrinc)  # Standardize real income
+  )
+
 ```
 
 ```{r}
@@ -403,7 +415,7 @@ happiness_model <-
 #| warning: false
 #| message: false
 
-# 创建模型系数摘要的数据框
+# Create a data frame summarizing model coefficients
 happiness_model_summary <- data.frame(
   Parameter = c(
     "Marital Status: Married",
@@ -422,7 +434,7 @@ happiness_model_summary <- data.frame(
   `90%` = c(1.1, 0.0, -0.01, 0.8, 0.5, 1.0, 0.03, -1.0)
 )
 
-# 使用 kable 创建和格式化表格
+# Use kable to create and format the table
 kable(
   happiness_model_summary,
   format = "markdown",
@@ -441,22 +453,85 @@ Positive coefficients for **Education Level: Graduate** (Mean = 0.50) and **Job 
 
 Finally, the Intercept (Mean = -1.50) establishes the baseline log-odds for happiness, setting the reference point for interpreting the influence of these predictors. Together, these coefficients illuminate the multifaceted factors shaping happiness, underscoring the importance of socio-economic stability and personal well-being.
 
+```{r}
+#| label: fig-happiness_model_coefficients
+#| fig-cap: The 90% credible intervals for all model coefficients in the happiness model
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+
+
+# Extract posterior arrays for the model coefficients
+posterior <- as.array(happiness_model)
+
+# Set a color scheme for the plots
+color_scheme_set("brightblue")
+
+# Plot the 90% credible intervals for all model coefficients
+# This visualizes the impact of each predictor on the ordered priority levels
+mcmc_intervals(posterior, prob = 0.9) +
+  labs(
+    title = "Happiness Model Coefficients",
+    subtitle = "90% credible intervals for the predictors",
+    x = "Coefficient Estimate",
+    y = "Parameters"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5), # Center the main title
+    plot.subtitle = element_text(hjust = 0.5) # Center the subtitle
+  )
+```
+As shown in @fig-happiness_model_coefficients, the Bayesian logistic regression model visualizes the impact of predictor variables on happiness. Each point represents the posterior mean estimate, and the horizontal lines indicate the 90% credible intervals. Key findings include:
+
+- The variable **`Marital Status: Married`** shows a positive coefficient, indicating that married individuals report significantly higher happiness compared to the reference group (e.g., never married).
+- **`Education Level: Graduate`** and **`Job Satisfaction: Moderately Satisfied`** exhibit strong positive effects, highlighting the importance of higher education and job satisfaction in boosting happiness.
+- Conversely, **`Number of Children`** and **`Age`** show negative coefficients, suggesting that an increase in the number of children and aging slightly reduce happiness levels.
+- **`Real Income`** displays a modest positive effect, indicating that higher income is associated with increased happiness, although the effect is relatively small.
+
+These findings provide detailed insights into the socio-economic and demographic factors influencing individual happiness.
+
+\newpage
 
 # Discussion {#sec-discussion}
 
-## First discussion point {#sec-first-point}
+This paper explores the factors influencing individual happiness using a Bayesian logistic regression model to analyze self-reported happiness levels. By leveraging a carefully selected subset of socio-economic and demographic variables from a comprehensive dataset, this study identifies patterns that highlight key determinants of happiness and their relative importance in shaping well-being outcomes.
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+## Detailed Exploration of Factors Influencing Happiness
 
-## Second discussion point
+This study carefully selects key variables—marital status, job satisfaction, education level, real income, age, and number of children—based on their strong association with individual happiness. The selection process was guided by both theoretical significance and empirical evidence, ensuring the model accurately reflects real-world influences on well-being. The quantitative analysis demonstrates how these variables play a pivotal role in shaping personal happiness. For instance, marital status and job satisfaction emerge as strong predictors, with married individuals and those who are highly satisfied with their jobs reporting significantly higher levels of happiness.
 
-Please don't use these as sub-heading labels - change them to be what your point actually is.
+Interestingly, the analysis reveals a nuanced relationship between the number of children and happiness. While having children can bring joy, larger family sizes are often associated with slightly lower levels of happiness, possibly due to increased financial and caregiving responsibilities. Similarly, higher levels of education and income are positively associated with happiness, illustrating the role of socio-economic stability in improving life satisfaction. These findings not only align with established theories but also provide a deeper understanding of the complex interactions among social, economic, and demographic factors that drive individual well-being.
 
-## Third discussion point
+## Strategic Implications of Variable Selection
 
-## Weaknesses and next steps
+By selecting variables with strong associations to individual happiness—such as marital status, job satisfaction, education level, income, age, and number of children—this study underscores the multifaceted nature of well-being. The inclusion of these variables reflects both theoretical relevance and empirical robustness, providing insights into the dynamics of happiness. For example, focusing on the positive impact of marriage and job satisfaction aligns with broader sociological findings about emotional and economic stability.
 
-Weaknesses and next steps should also be included.
+Interestingly, while other variables, such as detailed occupational categories or regional distinctions, were excluded to streamline the analysis, their potential impact opens avenues for future research. Future investigations could explore how specific professions or geographic contexts influence happiness, shedding light on how cultural and environmental factors interact with socio-economic predictors. This targeted approach not only refines current models but also lays the groundwork for exploring the broader complexities of what drives individual happiness.
+
+## Weaknesses and Future Research Directions
+
+While this study provides valuable insights into the factors influencing individual happiness, its scope is limited by the variables included and the dataset size. The exclusion of variables such as region of residence or specific occupational categories, though aimed at simplifying the model, restricts the depth of analysis. Future research could incorporate these variables to better understand the interplay of geographical, cultural, and professional contexts on happiness.
+
+Moreover, the model could be enhanced by exploring additional dimensions, such as health conditions or leisure time, to provide a more holistic view of well-being. Integrating data from broader samples across different regions or including longitudinal datasets could improve the model’s generalizability and offer insights into how happiness evolves over time.
+
+Another avenue for future exploration involves examining the impact of external socio-economic factors, such as economic downturns or public policy changes, on happiness. For example, understanding how financial crises or access to social services influence happiness levels could inform policies aimed at improving societal well-being.
+
+Additionally, the use of advanced machine learning techniques could help uncover hidden patterns and interactions among variables that traditional regression models might miss. For instance, exploring non-linear relationships between age, income, and happiness could yield deeper insights into the life stages most conducive to well-being.
+
+These research directions not only build upon the findings of this study but also provide opportunities to address its limitations, contributing to a more comprehensive understanding of the determinants of happiness in diverse contexts.
+
+## Envisioning the Future of Happiness Studies
+
+The potential for future research based on this dataset is vast. One promising avenue involves investigating the intersection between happiness and broader societal factors, such as access to healthcare or the availability of social support systems. By integrating external datasets, future studies could explore how these contextual elements amplify or mitigate the effects of individual-level predictors like income or job satisfaction.
+
+Another intriguing possibility is examining how happiness evolves across different life stages, using longitudinal data to track changes over time. Such research could illuminate critical periods where interventions might have the greatest impact on well-being.
+
+Additionally, incorporating geographical data could provide a deeper understanding of regional variations in happiness, allowing for an analysis of how cultural or environmental factors shape well-being. The dataset’s richness opens the door to these and many other avenues for advancing our understanding of the complex drivers of happiness.
+
+## The Value of Insights into Happiness Drivers
+
+This research highlights the analytical value of understanding the factors that drive individual happiness, such as the significant role of marital status and job satisfaction. These findings can inform policy development and workplace strategies aimed at improving well-being. The positive correlation between higher education levels and happiness also emphasizes the broader societal value of investing in accessible and equitable education systems, reflecting the importance of socio-economic stability in fostering life satisfaction.
 
 \newpage
 
@@ -470,50 +545,284 @@ Weaknesses and next steps should also be included.
 
 ## Posterior predictive check
 
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+In @fig-ppcheckandposteriorvsprior-1, we conduct a posterior predictive check to assess the fit of the Bayesian logistic regression model. This plot compares the observed data (*y*) with the replicated data (*y_rep*) generated by the model. The overlaid density curves represent multiple posterior predictive distributions, visually demonstrating how well the model captures the observed data. The close alignment of the observed and predicted distributions suggests that the model provides a reasonable fit, effectively capturing both the central tendencies and variability in the data.
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+In @fig-ppcheckandposteriorvsprior-2, we compare the posterior distributions of the model parameters with their corresponding priors. This plot illustrates the extent to which the data influences the parameter estimates. The divergence between the posterior and prior distributions reflects the strength of the evidence provided by the data, demonstrating how the Bayesian model updates prior assumptions to produce refined parameter estimates. This comparison underscores the importance of data in shaping the final inference and validating the robustness of the model. 
 
 ```{r}
+#| eval: true
 #| echo: false
 #| message: false
 #| warning: false
-#| label: fig-post
-#| fig-cap: Posterior distribution for bayesian logistic regression model
+#| label: fig-ppcheckandposteriorvsprior
+#| layout-ncol: 2
+#| fig-cap: "Examining how the happiness model fits the data and how the posterior compares to the prior"
+#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
 pp_check(happiness_model) +
   theme_minimal() +
   labs(
     x = "Predicted and Observed Values",
     y = "Density"
-  ) +
-  theme(legend.position = "bottom")
+  ) + theme(legend.position = "bottom")
 
 
-
-```
-
-```{r}
-
+posterior_vs_prior(happiness_model) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  theme(legend.position = "bottom") +
+  coord_flip()
 
 ```
 
 ## Diagnostics
 
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
+@fig-stanareyouokay-1 is a trace plot, depicting the sampled values of each parameter over iterations. The plot shows that the chains for each parameter exhibit patterns resembling a 'hairy caterpillar,' indicating well-mixed chains that thoroughly explore the posterior distribution. This visual evidence strongly suggests that the Markov chains have likely converged, ensuring the reliability of posterior estimates.
 
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
+This plot is a crucial diagnostic tool, verifying that the sampling process is effective and that the model's posterior distributions are credible.
+
+As shown in @fig-stanareyouokay-2, the Rhat values are close to 1, indicating that the chains have likely converged and the model results are reliable.
+
+Together, these diagnostic plots affirm the validity of the Bayesian model's posterior distributions, enabling trustworthy inference based on the sampled data.
+
+
+
+
+
+
+
 
 ```{r}
 #| echo: false
 #| eval: true
 #| message: false
 #| warning: false
+#| label: fig-stanareyouokay
+#| fig-cap: "Checking the convergence of the MCMC algorithm for the happiness model"
+#| fig-subcap: ["Trace plot", "Rhat plot"]
+#| layout-ncol: 2
+
+# Trace plot for the MCMC samples of the happiness model
+plot(happiness_model, "trace")
+
+# Rhat plot to check convergence for the happiness model
+plot(happiness_model, "rhat")
 
 
 ```
 
 
+As shown in @fig-posterior, the graph visualizes the posterior distributions of the parameters from the Bayesian logistic regression model analyzing happiness predictors. Each horizontal line represents the **90% credible interval**, centered around the median of the posterior distribution for a given parameter. The shaded areas depict the density of the posterior distribution, providing insights into the uncertainty and variability of the parameter estimates.
+
+The parameters encompass socio-economic and demographic factors, such as marital status, job satisfaction, education level, and income. Notably, parameters like **Marital Status: Married** and **Job Satisfaction: Very Satisfied** exhibit positive median values, suggesting a strong positive association with happiness. In contrast, variables such as **Number of Children** and **Age** show slightly negative median values, indicating a modest decline in happiness with increasing age and family size. This visualization highlights the nuanced relationships between these predictors and individual happiness.
+
+
+```{r}
+#| label: fig-posterior
+#| fig-cap: "The posterior distributions for all the parameters of the happiness model"
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.width: 8
+
+# Extract the posterior distribution for all model coefficients
+posterior <- as.array(happiness_model)
+
+
+# Plot the posterior distributions for all parameters to assess their influence on happiness
+mcmc_areas(posterior) +
+  labs(
+    title = "Posterior Distributions of Happiness Model Parameters",
+    subtitle = "Assessing the influence of socio-economic and demographic predictors on happiness",
+    x = "Parameter Value",
+    y = "Density"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5), # Center the main title
+    plot.subtitle = element_text(hjust = 0.5) # Center the subtitle
+  )
+
+
+```
+
+
+# Idealized Happiness Study Methodology and Survey 
+
+## Objective
+
+Our goal is to provide a robust analysis of the factors influencing individual happiness by designing a high-quality survey that captures data on key socio-economic and demographic variables. By addressing potential biases and ensuring representative sampling, this methodology aims to produce actionable insights within a manageable budget.
+
+### Sampling Approach
+
+We aim for a sample size of approximately 2,500 respondents, selected through **stratified random sampling** to ensure representativeness across demographic groups.
+
+**Definition and Justification of Stratified Sampling:**
+
+Stratified sampling divides the population into subgroups, or "strata" (e.g., by age, gender, income, education, and marital status). Participants are randomly sampled within each stratum to ensure proportional representation. This method enhances the precision of subgroup estimates and is well-suited for studies exploring the interplay of socio-economic variables and subjective well-being [@groves2009survey].
+
+**Strengths and Weaknesses of Stratified Sampling:**
+
+Stratified sampling reduces sampling error, especially in smaller or more variable subgroups such as single parents or older adults. However, it requires accurate population data to establish strata sizes, and survey costs can increase when oversampling underrepresented groups [@lohr2019sampling].
+
+**Sampling Simulation:**
+
+A simulation can be conducted to compare stratified and simple random sampling methods using previously collected data. This would evaluate the reduction in sampling error and the improved accuracy of subgroup estimates, validating the use of stratified sampling for happiness research.
+
+**Stratification and Quotas:**
+
+Demographic quotas will be weighted based on recent census data to reflect the population. The primary demographic strata include:
+
+- **Age**: 18-29, 30-44, 45-64, 65+  
+- **Gender**: Male, Female  
+- **Marital Status**: Married, Never married, Divorced, Separated, Widowed  
+- **Education Level**: Less than high school, High school, Associate/Junior college, Bachelor's, Graduate  
+- **Income Range**: Self-reported continuous values, with adjustments for missing responses.
+
+### Recruitment Strategy
+
+We will collaborate with survey panel providers to access verified respondents while supplementing with targeted recruitment via social media ads to reach underrepresented groups. Each participant will receive a $3 incentive to encourage engagement.
+
+**Panel Recruitment and Potential Biases:**
+
+While panel providers offer efficiency, panel bias may arise due to frequent survey participation by the same individuals. To address this, additional recruitment via social media will focus on underrepresented demographics, ensuring a diverse and balanced sample.
+
+
+### Survey Design and Implementation
+
+The survey will be hosted on Google Forms, featuring a professional introduction, clear instructions, and contact details for queries. It will remain open for 2-3 weeks to allow adequate time for responses.
+
+**Survey Structure:**
+
+1. **Introduction and Consent**: A message explaining the purpose of the survey and ensuring anonymity.  
+2. **Screening Questions**: Basic eligibility checks (e.g., age and citizenship).  
+3. **Core Questions**: Questions on socio-economic and demographic variables, happiness levels, and contributing factors.  
+4. **Closing Message**: A thank-you note and contact information for follow-up.
+
+Questions will be neutrally worded and logically ordered, with an estimated completion time of 5–7 minutes.
+
+### Data Validation
+
+To ensure high-quality responses, the following measures will be implemented:
+
+- **Attention Checks**: Include questions designed to identify inattentive respondents.  
+- **Duplicate Prevention**: Settings to restrict multiple submissions per respondent.  
+- **Response Time Analysis**: Flag responses completed significantly faster than the average time for review.  
+- **Post-Survey Weighting**: Adjust responses to align with demographic quotas.
+
+### Analytical Framework
+
+To analyze the collected data, a Bayesian logistic regression model will be applied to quantify the influence of variables like marital status, job satisfaction, and income on happiness levels. The model will incorporate:
+
+- **Priors Based on Previous Research**: Using established studies as a baseline for parameters.  
+- **Hierarchical Structure**: Accounting for variation across demographic groups.  
+- **Validation Metrics**: Evaluating model performance using posterior predictive checks and accuracy measures.
+
+This comprehensive methodology ensures reliable insights into the complex factors shaping individual happiness while laying the groundwork for future studies on well-being determinants.
+
+## Idealized Survey
+
+1. **What is your marital status?**
+
+   - Married
+   
+   - Never married
+   
+   - Divorced
+   
+   - Separated
+   
+   - Widowed
+   
+2. **How many children do you have?**
+
+   - 0
+   
+   - 1
+   
+   - 2
+   
+   - 3
+   
+   - 4
+   
+   - 5
+   
+   - 6
+   
+   - 7
+   
+   - 8 or more
+   
+3. **What is your age?**
+
+   - Please enter your age in years: _______
+
+4. **What is your gender?**
+
+   - Male
+   
+   - Female
+
+5. **What is the highest level of education you have completed?**
+
+   - Less than high school
+   
+   - High school
+   
+   - Associate or junior college
+   
+   - Bachelor's degree
+   
+   - Graduate degree
+   
+6. **What is your current job satisfaction level?**
+
+   - Very satisfied
+   
+   - Moderately satisfied
+   
+   - A little dissatisfied
+   
+   - Very dissatisfied
+   
+   - .i: Inapplicable
+   
+   - .d: Do not know/Cannot choose
+
+7. **What is your annual income (in USD)?**
+
+   - Please enter your income: _______
+   
+   *(If you do not have an income, please enter -100.)*
+
+8. **How would you rate your happiness level?**
+
+   - Very happy
+   
+   - Pretty happy
+   
+   - Not too happy
+   
+9. **To ensure data quality, please select "Pretty happy" for this question.**
+
+   - Very happy
+   
+   - Pretty happy
+   
+   - Not too happy
+
+10. **How would you describe your overall job satisfaction's impact on your happiness?**
+
+    - Strongly positive
+    
+    - Moderately positive
+    
+    - Neutral
+    
+    - Slightly negative
+    
+    - Strongly negative
 
 
 \newpage
