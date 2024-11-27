@@ -659,11 +659,11 @@ We aim for a sample size of approximately 2,500 respondents, selected through **
 
 **Definition and Justification of Stratified Sampling:**
 
-Stratified sampling divides the population into subgroups, or "strata" (e.g., by age, gender, income, education, and marital status). Participants are randomly sampled within each stratum to ensure proportional representation. This method enhances the precision of subgroup estimates and is well-suited for studies exploring the interplay of socio-economic variables and subjective well-being [@groves2009survey].
+Stratified sampling divides the population into subgroups, or "strata" (e.g., by age, gender, income, education, and marital status). Participants are randomly sampled within each stratum to ensure proportional representation. This method enhances the precision of subgroup estimates and is well-suited for studies exploring the interplay of socio-economic variables and subjective well-being.
 
 **Strengths and Weaknesses of Stratified Sampling:**
 
-Stratified sampling reduces sampling error, especially in smaller or more variable subgroups such as single parents or older adults. However, it requires accurate population data to establish strata sizes, and survey costs can increase when oversampling underrepresented groups [@lohr2019sampling].
+Stratified sampling reduces sampling error, especially in smaller or more variable subgroups such as single parents or older adults. However, it requires accurate population data to establish strata sizes, and survey costs can increase when oversampling underrepresented groups.
 
 **Sampling Simulation:**
 
