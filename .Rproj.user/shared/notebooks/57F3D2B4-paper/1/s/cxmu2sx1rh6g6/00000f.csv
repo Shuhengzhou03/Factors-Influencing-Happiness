@@ -1,0 +1,37 @@
+"0","#| include: false"
+"0","#| warning: false"
+"0","#| message: false"
+"0",""
+"0","library(tidyverse)"
+"0","library(palmerpenguins)"
+"0","library(broom)"
+"0","library(ggplot2)"
+"0","library(dplyr)"
+"0","library(tidyr)"
+"0","library(arrow)"
+"0","library(scales)"
+"0","library(rstanarm)"
+"0","library(brms)"
+"0","library(knitr)"
+"0","library(bayesplot)"
+"2","This is bayesplot version 1.11.1
+"
+"2","- Online documentation and vignettes at mc-stan.org/bayesplot
+"
+"2","- bayesplot theme set to bayesplot::theme_default()
+"
+"2","   * Does _not_ affect other ggplot2 plots
+"
+"2","   * See ?bayesplot_theme_set for details on theme setting
+"
+"2","
+Attaching package: ‘bayesplot’
+
+"
+"2","The following object is masked from ‘package:brms’:
+
+    rhat
+
+"
+"0","# Load the dataset"
+"0","data <- read_parquet(here::here(""data/02-analysis_data/cleaned_happiness_data.parquet""))"

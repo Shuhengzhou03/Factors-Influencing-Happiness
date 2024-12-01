@@ -1,0 +1,10 @@
+"0",""
+"0",""
+"0","posterior_vs_prior(happiness_model) +"
+"0","  theme_minimal() +"
+"0","  scale_color_brewer(palette = ""Set1"") +"
+"0","  theme(legend.position = ""bottom"") +"
+"0","  coord_flip()"
+"2","
+Drawing from prior...
+"
