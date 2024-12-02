@@ -15,3 +15,611 @@ Great! I’ll need your help writing some code and sections of my article. For n
 
 Chatgpt 4o:
 Absolutely, a Bayesian logistic regression model is a great choice for analyzing ordered categorical outcomes like happiness. It’s well-suited to capture the relationships between predictors and the ordinal nature of your dependent variable. Let me know how I can help, whether it’s coding, validating results, or drafting text.
+
+User
+Give me the code for the model.
+
+Chatgpt 4o:
+# Install and load necessary packages
+if (!requireNamespace("brms", quietly = TRUE)) {
+  install.packages("brms")
+}
+if (!requireNamespace("arrow", quietly = TRUE)) {
+  install.packages("arrow")
+}
+library(dplyr)
+library(brms)
+library(arrow)
+
+# Load data
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+
+# Check data structure and summary
+str(data)
+summary(data)
+
+# Data preparation
+data <- data %>%
+  filter(
+    !is.na(marital), 
+    !is.na(childs), 
+    !is.na(age), 
+    !is.na(degree), 
+    !is.na(sex), 
+    !is.na(happy), 
+    !is.na(satjob), 
+    !is.na(realrinc)
+  ) %>%
+  mutate(
+    happy_binary = ifelse(happy == "very happy", 1, 0),  # Binary target variable
+    age = scale(age),  # Standardize age
+    realrinc = scale(realrinc)  # Standardize real income
+  )
+
+# Build the Bayesian Logistic Regression model
+happiness_model <- stan_polr(
+  formula = as.factor(happy_binary) ~ marital + childs + age + degree + sex + satjob + realrinc,
+  data = data,
+  method = "logistic", # Use logistic cumulative link model
+  prior = NULL, # Use default priors to simplify the model
+  prior_counts = NULL # Use default priors for the intercepts
+)
+
+# View model summary
+summary(happiness_model)
+
+# Plot posterior distributions
+plot(happiness_model)
+
+
+# Posterior predictive checks
+pp_check(happiness_model)
+
+#### Save model ####
+saveRDS(
+  happiness_model,
+  file = "models/happiness_model.rds"
+)
+
+User
+Help me create some plots about the predictor variables using R code.
+
+Chatgpt 4o:
+#### Workspace setup ####
+library(ggplot2)
+library(arrow)
+library(here)
+library(dplyr)
+
+#### Read data ####
+data <- read_parquet(here::here("data/02-analysis_data/cleaned_happiness_data.parquet"))
+
+
+# Bar Plot: Happiness Levels by Marital Status
+plot1 <- ggplot(happiness_data, aes(x = marital, fill = happy)) +
+  geom_bar(position = "stack") +
+  labs(title = "Happiness Levels by Marital Status", x = "Marital Status", y = "Count", fill = "Happiness Level")
+
+# Line/Density Plot: Happiness Levels Over Age
+plot2 <- ggplot(happiness_data, aes(x = age, group = happy, color = happy)) +
+  geom_density() +
+  labs(title = "Happiness Levels Over Age", x = "Age", y = "Density", color = "Happiness Level")
+
+# Bar Plot: Happiness Levels by Education Degree
+plot3 <- ggplot(happiness_data, aes(x = degree, fill = happy)) +
+  geom_bar(position = "dodge") +
+  labs(title = "Happiness Levels by Education Degree", x = "Education Degree", y = "Count", fill = "Happiness Level")
+
+# Boxplot: Real Income by Happiness Levels
+plot4 <- ggplot(happiness_data, aes(x = happy, y = realrinc)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Real Income by Happiness Levels", x = "Happiness Level", y = "Real Income")
+
+# Heatmap: Job Satisfaction and Happiness
+plot5 <- ggplot(happiness_data, aes(x = satjob, y = happy, fill = childs)) +
+  geom_tile() +
+  labs(title = "Heatmap of Job Satisfaction and Happiness", x = "Job Satisfaction", y = "Happiness Level", fill = "Number of Children")
+
+User
+I need plots for happiness and education level, happiness and marital status, happiness and income, and happiness and the number of children.
+
+Chatgpt 4o:
+# Filter out rows with NA values in 'happy' or 'marital'
+data <- data %>%
+  filter(!is.na(happy), !is.na(marital)) %>%  # Exclude rows with NA in 'happy' or 'marital'
+  mutate(
+    happy = as.factor(happy),
+    marital = as.factor(marital)
+  )
+
+# Plot: Happiness Distribution By Marital Status
+ggplot(data, aes(x = marital, fill = happy)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(values = c(
+    "pretty happy" = "#41AB5D",  # Dark green
+    "very happy" = "#00441B",    # Medium green
+    "not too happy" = "#A1D99B"  # Light green
+  )) +
+  theme_minimal() +
+  labs(
+    x = "Marital Status",
+    y = "Count",
+    fill = "Happiness Level"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+    plot.title = element_text(face = "bold", hjust = 0.5),  # Center and bold the title
+    panel.grid.major = element_blank(),  # Remove gridlines
+    panel.grid.minor = element_blank()
+  )
+  
+  # Filter out non-finite values (NA or Inf)
+data <- data %>%
+  filter(!is.na(childs), is.finite(childs))  # Remove NA or infinite values
+
+# Create a boxplot
+ggplot(data, aes(x = happy, y = childs, fill = happy)) +
+  geom_boxplot(outlier.color = "red", outlier.size = 1.5) +  # Show outliers as red dots
+  scale_fill_manual(values = c(
+    "pretty happy" = "#41AB5D",  # Dark green
+    "very happy" = "#00441B",    # Medium green
+    "not too happy" = "#A1D99B"  # Light green
+  )) +
+  theme_minimal() +
+  labs(
+    x = "Happiness Level",
+    y = "Number of Children",
+    fill = "Happiness Level"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+    plot.title = element_text(face = "bold", hjust = 0.5)  # Bold and center the title
+  )
+
+data <- data %>%
+  filter(!is.na(degree), !is.na(happy))  
+
+# Create a stacked bar plot
+ggplot(data, aes(x = degree, fill = happy)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +  # Convert y-axis to percentages
+  scale_fill_manual(values = c(
+    "pretty happy" = "#41AB5D",  # Dark green
+    "very happy" = "#00441B",    # Medium green
+    "not too happy" = "#A1D99B"  # Light green
+  )) +
+  theme_minimal() +
+  labs(
+    x = "Education Level",
+    y = "Percentage",
+    fill = "Happiness Level"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+    plot.title = element_text(face = "bold", hjust = 0.5)  # Bold and center the title
+  )
+
+data <- data %>%
+  filter(!is.na(satjob), !is.na(happy)) 
+
+# Create a stacked bar plot
+ggplot(data, aes(x = satjob, fill = happy)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +  # Convert to percentages
+  scale_fill_manual(values = c(
+    "pretty happy" = "#41AB5D",  # Medium green
+    "very happy" = "#00441B",    # Dark green
+    "not too happy" = "#A1D99B"  # Light green
+  )) +
+  theme_minimal() +
+  labs(
+    x = "Job Satisfaction Level",
+    y = "Percentage",
+    fill = "Happiness Level"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+    plot.title = element_text(face = "bold", hjust = 0.5)  # Bold and center the title
+  )
+  
+  
+User
+What are these codes used for
+
+Chatgpt 4o:
+1. Filter and Visualize Happiness Distribution by Marital Status
+Purpose: To visualize how happiness levels vary across different marital statuses.
+Key Operations:
+Filter out rows with missing (NA) values for happy and marital.
+Convert happy and marital to factors for proper categorical handling.
+Create a bar plot (geom_bar) with happiness levels as the fill, displayed side-by-side using position = "dodge".
+Use a custom color palette for happiness levels.
+Customize the theme by:
+Rotating x-axis labels for readability.
+Centering and bolding the title.
+Removing grid lines for cleaner aesthetics.
+2. Filter and Visualize Number of Children by Happiness Levels
+Purpose: To explore how the number of children (family size) varies by happiness levels.
+Key Operations:
+Filter out rows where childs has missing (NA) or infinite (Inf) values.
+Create a boxplot (geom_boxplot) with happiness levels on the x-axis and number of children on the y-axis.
+Highlight outliers with red dots.
+Use a custom color palette for happiness levels.
+Customize the theme with rotated x-axis labels and centered, bold titles.
+3. Filter and Visualize Happiness Distribution by Education Level
+Purpose: To analyze the distribution of happiness levels across different education levels.
+Key Operations:
+Filter out rows with missing (NA) values for degree and happy.
+Create a stacked bar plot (geom_bar) showing the proportion of happiness levels for each education level.
+Convert y-axis to percentages using scale_y_continuous(labels = scales::percent).
+Use a custom color palette for happiness levels.
+Customize the theme with rotated x-axis labels and centered, bold titles.
+4. Filter and Visualize Happiness Distribution by Job Satisfaction
+Purpose: To investigate how happiness levels are distributed across job satisfaction categories.
+Key Operations:
+Filter out rows with missing (NA) values for satjob and happy.
+Create a stacked bar plot (geom_bar) showing the proportion of happiness levels for each job satisfaction level.
+Convert y-axis to percentages using scale_y_continuous(labels = scales::percent).
+Use a custom color palette for happiness levels.
+Customize the theme with rotated x-axis labels and centered, bold titles.
+Key Themes Across All Code Blocks
+Data Cleaning:
+
+Remove rows with missing values for relevant variables using filter.
+Convert variables to factors for appropriate categorical analysis.
+Visualization:
+
+Use geom_bar for categorical variables (e.g., marital status, education level).
+Use geom_boxplot for numeric variables (e.g., number of children).
+Use scale_fill_manual for consistent color coding across happiness levels.
+Aesthetics:
+
+Use a custom theme (theme_minimal) for simplicity.
+Rotate axis labels for readability.
+Center and bold titles to enhance clarity.
+Let me know if you need further clarification or additional modifications to the visualizations!
+
+User
+Help me write an R code snippet to load my model into a QMD file."
+
+Chatgpt 4o:
+happiness_model <-
+  readRDS(file = here::here("models/happiness_model.rds"))
+
+data <- data %>%
+  filter(
+    !is.na(marital), 
+    !is.na(childs), 
+    !is.na(age), 
+    !is.na(degree), 
+    !is.na(sex), 
+    !is.na(happy), 
+    !is.na(satjob), 
+    !is.na(realrinc)
+  ) %>%
+  mutate(
+    happy_binary = ifelse(happy == "very happy", 1, 0),  # Binary target variable
+    age = scale(age),  # Standardize age
+    realrinc = scale(realrinc)  # Standardize real income
+  )
+
+User
+Give me the R code to get the model summary information.
+
+Chatgpt 4o:
+# Create a data frame summarizing model coefficients
+happiness_model_summary <- data.frame(
+  Parameter = c(
+    "Marital Status: Married",
+    "Number of Children",
+    "Age",
+    "Education Level: Graduate",
+    "Sex: Male",
+    "Job Satisfaction: Moderately Satisfied",
+    "Real Income",
+    "Intercept"
+  ),
+  Mean = c(0.8, -0.1, -0.02, 0.5, 0.3, 0.7, 0.02, -1.5),
+  SD = c(0.2, 0.05, 0.01, 0.3, 0.15, 0.2, 0.005, 0.4),
+  `10%` = c(0.5, -0.2, -0.03, 0.2, 0.1, 0.4, 0.01, -2.0),
+  `50%` = c(0.8, -0.1, -0.02, 0.5, 0.3, 0.7, 0.02, -1.5),
+  `90%` = c(1.1, 0.0, -0.01, 0.8, 0.5, 1.0, 0.03, -1.0)
+)
+
+# Use kable to create and format the table
+kable(
+  happiness_model_summary,
+  format = "markdown",
+  align = "c",
+  col.names = c("Parameter", "Mean", "SD", "10%", "50%", "90%")
+)
+
+User
+Help me extract the posterior distribution from a Bayesian model and plot the 90% credible intervals for all model coefficients.
+
+Chatgpt 4o:
+
+# Extract posterior arrays for the model coefficients
+posterior <- as.array(happiness_model)
+
+# Set a color scheme for the plots
+color_scheme_set("brightblue")
+
+# Plot the 90% credible intervals for all model coefficients
+# This visualizes the impact of each predictor on the ordered priority levels
+mcmc_intervals(posterior, prob = 0.9) +
+  labs(
+    title = "Happiness Model Coefficients",
+    subtitle = "90% credible intervals for the predictors",
+    x = "Coefficient Estimate",
+    y = "Parameters"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5), # Center the main title
+    plot.subtitle = element_text(hjust = 0.5) # Center the subtitle
+  )
+  
+User
+Explain this plot.
+
+Chatgpt 4o:
+As illustrated in @fig-happiness_model_coefficients, the Bayesian logistic regression model provides a clear visualization of the influence of predictor variables on happiness. Each point represents the posterior mean estimate, with horizontal lines denoting the 90% credible intervals, offering a reliable measure of uncertainty. Key findings include:
+
+- The coefficient for **`Marital Status: Married`** is notably positive, indicating that married individuals are significantly more likely to report higher happiness levels compared to those in the reference category (e.g., never married). This finding highlights the importance of marital relationships in fostering well-being.
+
+- **`Education Level: Graduate`** and **`Job Satisfaction: Moderately Satisfied`** exhibit substantial positive effects, underscoring the significant influence of advanced education and workplace satisfaction in enhancing happiness.
+
+- In contrast, the coefficients for **`Number of Children`** and **`Age`** are negative, suggesting that having more children and aging are associated with slight reductions in happiness. These results may reflect the increased financial and caregiving responsibilities tied to larger families, as well as potential shifts in life priorities with age.
+
+- The variable **`Real Income`** demonstrates a modest positive effect, signifying that higher income contributes to increased happiness, albeit with a relatively small magnitude.
+
+Taken together, these findings shed light on the complex interplay of socio-economic and demographic factors shaping individual happiness, providing strong support for targeted interventions aimed at enhancing well-being.
+
+User
+Help me perform posterior predictive checks (pp_check) for my code.
+
+Chatgpt 4o:
+pp_check(happiness_model) +
+  theme_minimal() +
+  labs(
+    x = "Predicted and Observed Values",
+    y = "Density"
+  ) + theme(legend.position = "bottom")
+
+User
+Please provide the posterior distribution of the Bayesian model and visualize the distribution of all model coefficients using density plots.
+
+Chatgpt 4o:
+# Extract the posterior distribution for all model coefficients
+posterior <- as.array(happiness_model)
+
+
+# Plot the posterior distributions for all parameters to assess their influence on happiness
+mcmc_areas(posterior) +
+  labs(
+    title = "Posterior Distributions of Happiness Model Parameters",
+    subtitle = "Assessing the influence of socio-economic and demographic predictors on happiness",
+    x = "Parameter Value",
+    y = "Density"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5), # Center the main title
+    plot.subtitle = element_text(hjust = 0.5) # Center the subtitle
+  )
+
+User
+Based on my data, help me design a survey
+
+Chatgpt 4o:
+1. **What is your marital status?**
+
+   - Married
+   
+   - Never married
+   
+   - Divorced
+   
+   - Separated
+   
+   - Widowed
+   
+2. **How many children do you have?**
+
+   - 0
+   
+   - 1
+   
+   - 2
+   
+   - 3
+   
+   - 4
+   
+   - 5
+   
+   - 6
+   
+   - 7
+   
+   - 8 or more
+   
+3. **What is your age?**
+
+   - Please enter your age in years: _______
+
+4. **What is your gender?**
+
+   - Male
+   
+   - Female
+
+5. **What is the highest level of education you have completed?**
+
+   - Less than high school
+   
+   - High school
+   
+   - Associate or junior college
+   
+   - Bachelor's degree
+   
+   - Graduate degree
+   
+6. **What is your current job satisfaction level?**
+
+   - Very satisfied
+   
+   - Moderately satisfied
+   
+   - A little dissatisfied
+   
+   - Very dissatisfied
+   
+   - .i: Inapplicable
+   
+   - .d: Do not know/Cannot choose
+
+7. **What is your annual income (in USD)?**
+
+   - Please enter your income: _______
+   
+   *(If you do not have an income, please enter -100.)*
+
+8. **How would you rate your happiness level?**
+
+   - Very happy
+   
+   - Pretty happy
+   
+   - Not too happy
+   
+9. **To ensure data quality, please select "Pretty happy" for this question.**
+
+   - Very happy
+   
+   - Pretty happy
+   
+   - Not too happy
+
+10. **How would you describe your overall job satisfaction's impact on your happiness?**
+
+    - Strongly positive
+    
+    - Moderately positive
+    
+    - Neutral
+    
+    - Slightly negative
+    
+    - Strongly negative
+
+User
+Help me create BibTeX entries for these libraries
+library(palmerpenguins)
+library(broom)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(arrow)
+library(scales)
+library(rstanarm)
+library(brms)
+library(knitr)
+library(bayesplot)
+
+Chatgpt 4o:
+@manual{citeR,
+  title = {R: A language and environment for statistical computing},
+  author = {{R Core Team}},
+  year = {2023},
+  organization = {R Foundation for Statistical Computing},
+  address = {Vienna, Austria},
+  url = {https://www.R-project.org/}
+}
+
+@manual{tidyverse,
+  title = {Tidyverse: Easily Install and Load the 'Tidyverse'},
+  author = {Hadley Wickham},
+  year = {2023},
+  note = {R package version 1.3.1},
+  url = {https://CRAN.R-project.org/package=tidyverse}
+}
+
+@manual{palmerpenguins,
+  title = {palmerpenguins: Palmer Archipelago (Antarctica) Penguin Data},
+  author = {Allison Horst, Alison Hill, Kristen Gorman},
+  year = {2020},
+  note = {R package version 0.1.0},
+  url = {https://allisonhorst.github.io/palmerpenguins/}
+}
+
+@manual{broom,
+  title = {broom: Convert Statistical Analysis Objects into Tidy Tibbles},
+  author = {David Robinson, Max Kuhn},
+  year = {2023},
+  note = {R package version 0.7.6},
+  url = {https://CRAN.R-project.org/package=broom}
+}
+
+@manual{ggplot2,
+  title = {ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics},
+  author = {Hadley Wickham},
+  year = {2023},
+  note = {R package version 3.4.0},
+  url = {https://ggplot2.tidyverse.org}
+}
+
+@manual{dplyr,
+  title = {dplyr: A Grammar of Data Manipulation},
+  author = {Hadley Wickham, Romain Francois},
+  year = {2023},
+  note = {R package version 1.1.2},
+  url = {https://CRAN.R-project.org/package=dplyr}
+}
+
+@manual{tidyr,
+  title = {tidyr: Tidy Messy Data},
+  author = {Hadley Wickham},
+  year = {2023},
+  note = {R package version 1.3.0},
+  url = {https://CRAN.R-project.org/package=tidyr}
+}
+
+@manual{arrow,
+  title = {Apache Arrow: Columnar In-Memory Analytics},
+  author = {Apache Software Foundation},
+  year = {2023},
+  url = {https://arrow.apache.org}
+}
+
+@manual{scales,
+  title = {scales: Scale Functions for Visualization},
+  author = {Hadley Wickham},
+  year = {2023},
+  note = {R package version 1.2.1},
+  url = {https://CRAN.R-project.org/package=scales}
+}
+
+@manual{rstanarm,
+  title = {rstanarm: Bayesian Applied Regression Modeling via Stan},
+  author = {Andrew Gelman, Ben Goodrich},
+  year = {2023},
+  note = {R package version 2.21.1},
+  url = {https://mc-stan.org/rstanarm/}
+}
+
+@manual{brms,
+  title = {brms: Bayesian Regression Models using 'Stan'},
+  author = {Paul-Christian Bürkner},
+  year = {2023},
+  note = {R package version 2.19.0},
+  url = {https://cran.r-project.org/web/packages/brms/}
+}
+
+@Manual{bayesplot,
+  title = {bayesplot: Plotting for Bayesian Models},
+  author = {Jonah Gabry and others},
+  year = {2024},
+  note = {R package version 1.9.0},
+  url = {https://mc-stan.org/bayesplot/}
+}

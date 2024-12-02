@@ -1,13 +1,14 @@
 ---
-title: "What Makes Us Happy? Unveiling the Impact of Social, Economic, and Personal Factors"
+title: "What Makes Us Happy? Examining the Impact of Social, Economic, and Personal Factors"
 subtitle: "Marital Status and Job Satisfaction as Major Positive Predictors of Happiness: A Bayesian Analysis of Socio-Economic and Personal Factors Influencing Well-Being"
 author: "Shuheng (Jack) Zhou"
 thanks: "The GitHub Repository containing all data, R code, and other files used in this project is located here:<https://github.com/Shuhengzhou03/Factors-Influencing-Happiness.git>"
 date: today
 date-format: long
-abstract: "This study leverages a logistic regression model to investigate the influence of diverse social, economic, and personal factors on self-reported happiness. Focusing on key variables such as income, marital status, education level, job satisfaction, and the number of children, the research provides a nuanced examination of their impact on individual well-being. The findings underscore the relative importance of these factors, offering a deeper understanding of the intricate interplay between socioeconomic conditions and personal happiness, while pinpointing the most salient predictors of well-being."
+abstract: "This study employs a logistic regression model to investigate the influence of diverse social, economic, and personal factors on self-reported happiness. By focusing on variables such as income, marital status, education level, job satisfaction, and the number of children, it examines their respective roles in shaping individual well-being. The findings underscore the significance of these factors, illustrating how socioeconomic conditions and personal attributes interact to influence happiness. This analysis offers a clearer perspective on the primary predictors of well-being, with meaningful implications for enhancing both individual and societal happiness."
 format: pdf
 number-sections: true
+toc: true
 bibliography: references.bib
 ---
 
@@ -36,31 +37,31 @@ data <- read_parquet(here::here("data/02-analysis_data/cleaned_happiness_data.pa
 
 # Introduction {#sec-intro}
 
-Happiness is a cornerstone of human well-being and a long-standing focus of psychological and sociological inquiry. Despite extensive research, understanding the intricate interplay of factors contributing to happiness remains a formidable challenge. While prior studies have primarily centered on socio-economic determinants such as income, education, and employment, comparatively less attention has been devoted to the influence of personal characteristics and socio-cultural variables. This paper seeks to bridge this gap by examining how a combination of socio-economic and personal factors collectively shape individual happiness.
+Happiness is a cornerstone of human well-being and a long-standing focus of psychological and sociological inquiry. Despite extensive research, understanding the complex interplay of factors contributing to happiness remains a significant challenge. While prior studies have primarily centered on socio-economic determinants such as income, education, and employment, comparatively less attention has been devoted to the influence of personal characteristics and socio-cultural variables. This paper seeks to address this issue by examining how a combination of socio-economic and personal factors collectively shape individual happiness.
 
-The critical role of socio-economic stability in fostering happiness is well-documented. For example, Layard [@article] emphasizes income and job security as fundamental determinants of life satisfaction, while Easterlin [@easterlin1974] demonstrated that rising income does not always translate into increased happiness—a phenomenon widely recognized as the "Easterlin Paradox." More recently, Helliwell et al. [@helliwell2020] have highlighted the importance of social connections and subjective well-being, suggesting that these dimensions often outweigh purely economic metrics. Despite these valuable contributions, a notable gap persists in understanding how socio-economic factors interact with personal characteristics—such as marital status, gender, and the number of children—in shaping happiness.
+The essential role of socio-economic stability in fostering happiness is well-documented. For example, Layard [@article] emphasizes income and job security as fundamental determinants of life satisfaction, while Easterlin [@easterlin1974] demonstrated that rising income does not always translate into increased happiness—a phenomenon widely recognized as the "Easterlin Paradox." More recently, Helliwell et al. [@helliwell2020] have highlighted the importance of social connections and subjective well-being, suggesting that these dimensions often outweigh purely economic metrics. Despite these valuable contributions, a notable issue persists in understanding how socio-economic factors interact with personal characteristics—such as marital status, gender, and the number of children—in shaping happiness.
 
-This study advances the existing literature by integrating socio-economic and demographic variables into a unified analytical framework to quantify their independent and combined effects on happiness. Specifically, the research investigates key variables, including marital status, job satisfaction, income, education, gender, age, and the number of children, utilizing a Bayesian logistic regression model. By focusing on the interplay between personal and socio-economic factors, the study provides a more nuanced perspective, addressing critical gaps in the literature.
+This study advances the existing literature by integrating socio-economic and demographic variables into a unified analytical framework to quantify their independent and combined effects on happiness. Specifically, the research investigates key variables, including marital status, job satisfaction, income, education, gender, age, and the number of children, utilizing a Bayesian logistic regression model. By focusing on the interplay between personal and socio-economic factors, the study provides a more detailed perspective, addressing important gaps in the literature.
 
 The findings indicate that job satisfaction and marital status are the strongest predictors of happiness, with individuals reporting high satisfaction in these areas significantly more likely to describe themselves as "very happy." Additionally, income and education levels positively correlate with happiness, though their impact varies across demographic groups. Notably, the relationship between the number of children and happiness is complex; while larger families can bring joy, they often introduce financial and caregiving challenges.
 
-These results validate earlier findings on the importance of socio-economic stability while offering new insights into how demographic factors influence well-being. The study provides actionable recommendations for policymakers and social scientists to design targeted interventions aimed at enhancing happiness across different population segments.
+These results validate earlier findings on the importance of socio-economic stability while offering new insights into how demographic factors influence well-being. The study provides practical recommendations for policymakers and social scientists to design targeted interventions aimed at enhancing happiness across different population segments.
 
 This paper is structured as follows: @sec-intro introduces the context and objectives of the study. @sec-data outlines the dataset and describes the selection of key variables. @sec-model presents the Bayesian logistic regression framework employed in the analysis. @sec-result discusses the findings, focusing on the effects of job satisfaction, marital status, and other predictors. @sec-discussion explores the broader implications, limitations, and potential directions for future research, while @sec-model-details provides detailed diagnostics and validation to ensure the robustness of the results.
 
+
 ## Estimand
 
-The estimand of this study is the probability of an individual self-reporting as "very happy." Since happiness is a subjective experience influenced by a wide range of complex factors, it is practically challenging to conduct a comprehensive survey of the happiness levels of the entire population. Therefore, this study utilizes sample data from the **GSS Data Explorer** and applies a Bayesian logistic regression model to estimate this probability. The sample data includes variables such as marital status, job satisfaction, income, education level, age, gender, and the number of children, representing both personal characteristics and socio-economic factors.
+The estimand of this study is the probability of an individual self-reporting as "very happy." Since happiness is a subjective experience influenced by a wide range of complex factors, it is practically challenging to conduct a detailed survey of the happiness levels of the entire population. Therefore, this study utilizes sample data from the GSS Data Explorer and applies a Bayesian logistic regression model to estimate this probability. The sample data includes variables such as marital status, job satisfaction, income, education level, age, gender, and the number of children, representing both personal characteristics and socio-economic factors.
 
-Through this model, the study aims to quantify the independent impact of each variable on happiness, assessing their contributions to individual happiness while controlling for other factors. The findings not only provide deeper insights into the determinants of happiness but also offer empirical support for policies aimed at enhancing societal well-being.
-
+Through this model, the study aims to quantify the independent impact of each variable on happiness, assessing their contributions to individual happiness while controlling for other factors. The findings not only provide a better understanding of the determinants of happiness but also offer empirical support for policies aimed at enhancing societal well-being.
 
 # Data {#sec-data}
 
 ## Measurement
 
 
-The data utilized in this study was sourced from the [GSS Data Explorer](https://gssdataexplorer.norc.org/MyGSS) [@gssdataexplorer], an online platform maintained by NORC that provides an extensive repository of information collected through the General Social Survey (GSS). The GSS dataset captures a wide range of social, economic, and personal characteristics, making it a valuable resource for analyzing societal behaviors and trends. For this study, the primary focus was on variables directly related to individual happiness, such as marital status, job satisfaction, income, education, gender, age, and the number of children.
+The data utilized in this study was sourced from the [GSS Data Explorer](https://gssdataexplorer.norc.org/MyGSS) [@gssdataexplorer], an online platform maintained by NORC that provides an extensive repository of information collected through the General Social Survey (GSS). The GSS dataset captures a wide range of social, economic, and personal characteristics, making it a useful resource for analyzing societal behaviors and trends. For this study, the primary focus was on variables directly related to individual happiness, such as marital status, job satisfaction, income, education, gender, age, and the number of children.
 
 In addition to the GSS dataset, there are other datasets that could have been used to analyze the factors influencing happiness. For example, the European Social Survey (ESS) provides rich data on life satisfaction and happiness, but it primarily focuses on European countries, making it less suitable for this study's focus on American society. In contrast, the GSS dataset is centered on the U.S. population, offering more relevant data for examining the impact of socio-economic conditions and personal characteristics on happiness in the United States. Similarly, the World Values Survey (WVS) offers global social-economic data, but due to its broad scope, it may not be as suitable for focusing on happiness factors specific to the U.S. population. The American Time Use Survey (ATUS) primarily focuses on time allocation rather than directly measuring life satisfaction or happiness, making it less aligned with the objectives of this study. The GSS dataset was chosen for its focus on U.S. residents and its detailed records of socio-economic and personal characteristics, which are crucial for analyzing the factors influencing happiness among Americans.
 
@@ -76,7 +77,7 @@ To ensure the data's relevance to this study, preprocessing steps were undertake
 
 The entire process of data handling, analysis, modeling, and visualization was conducted using the R programming language [@citeR]. The following R packages were instrumental in this study:
 
-- **`tidyverse`** [@tidyverse]: Provided a comprehensive set of tools for data manipulation and visualization, significantly simplifying the workflow.
+- **`tidyverse`** [@tidyverse]: Provided a suite of tools for data manipulation and visualization, significantly simplifying the workflow.
 - **`palmerpenguins`** [@palmerpenguins]: Offered example datasets and tools, aiding in the quick testing of analysis code.
 - **`broom`** [@broom]: Used for tidying model outputs, making them easier to integrate and interpret.
 - **`ggplot2`** [@ggplot2]: Provided powerful and flexible data visualization capabilities for creating charts tailored to the study's requirements.
@@ -85,7 +86,7 @@ The entire process of data handling, analysis, modeling, and visualization was c
 - **`arrow`** [@arrow]: Efficiently read and wrote large datasets, enhancing data processing performance.
 - **`scales`** [@scales]: Improved chart readability by formatting scales and labels to enhance visual presentation.
 - **`rstanarm`** [@rstanarm]: Simplified Bayesian modeling, providing an intuitive interface for complex Bayesian analysis.
-- **`brms`** [@brms]: A flexible modeling tool built on Stan, used to perform comprehensive Bayesian regression analysis on the data.
+- **`brms`** [@brms]: A flexible modeling tool built on Stan, used to perform Bayesian regression analysis on the data.
 - **`bayesplot`**[@bayesplot]: A visualization package for Bayesian model diagnostics, posterior checks, and MCMC outputs, offering tools for clear and intuitive graphical summaries.
 
 Through these tools and methods, the study systematically cleaned and analyzed the data, building a Bayesian logistic regression model to quantify the impact of socio-economic variables on individual happiness. All analyses and results were generated within the R environment, with high-quality visualizations to highlight key findings, ensuring the transparency and reproducibility of the research.
@@ -112,7 +113,7 @@ data %>%
 ```
 
 
-@tbl-happiness_preview presents the first six rows from the cleaned dataset, focusing on socio-economic and personal variables that influence happiness. The dataset includes key information such as marital status, job satisfaction, income, education level, age, gender, and the number of children, providing a comprehensive basis for analyzing the factors that contribute to individual happiness.
+@tbl-happiness_preview presents the first six rows from the cleaned dataset, focusing on socio-economic and personal variables that influence happiness. The dataset includes key information such as marital status, job satisfaction, income, education level, age, gender, and the number of children, providing a detailed basis for analyzing the factors that contribute to individual happiness.
 
 	
 Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
@@ -183,7 +184,7 @@ ggplot(data, aes(x = marital, fill = happy)) +
 
 \newpage
 
-**childs:** A numerical variable indicating the number of children an individual has (e.g., 2). "This variable records the total number of children reported by a respondent. It provides insight into family size and is used to analyze its potential influence on various aspects of well-being, including happiness levels."
+**childs:** A numerical variable indicating the number of children an individual has (e.g., 2). "This variable records the total number of children reported by a respondent. It shows family size and is used to analyze its potential influence on various aspects of well-being, including happiness levels."
 
 ```{r}
 #| echo: false
@@ -220,7 +221,7 @@ ggplot(data, aes(x = happy, y = childs, fill = happy)) +
 
 \newpage
 
-**degree:** A categorical variable indicating an individual's highest level of educational attainment (e.g., "Bachelor's"). "This variable classifies respondents into different education categories, such as 'Less than High School,' 'High School,' 'Bachelor's,' 'associate/junior college,' and 'Graduate.' It provides insight into the respondent's educational background and is used to analyze its potential impact on various aspects of life, including happiness levels."
+**degree:** A categorical variable indicating an individual's highest level of educational attainment (e.g., "Bachelor's"). "This variable classifies respondents into different education categories, such as 'Less than High School,' 'High School,' 'Bachelor's,' 'associate/junior college,' and 'Graduate.' It examines the respondent's educational background and is used to analyze its potential impact on various aspects of life, including happiness levels."
 
 ```{r}
 #| echo: false
@@ -253,11 +254,11 @@ ggplot(data, aes(x = degree, fill = happy)) +
 
 
 ```
-@fig-Degree illustrates the relationship between education level and happiness levels, with data points grouped by educational categories for clarity. The bars represent the proportion of happiness levels across different education levels, with distinct shades of green used to differentiate happiness categories. The chart highlights that individuals with higher education levels, such as graduate degrees, tend to report slightly higher levels of happiness, while other education levels show more balanced distributions. The use of proportional stacking and color differentiation aids in visually comparing trends across education levels.
+@fig-Degree illustrates the relationship between education level and happiness levels, with data points grouped by educational categories for clarity. The bars display the proportion of happiness levels by education categories, using distinct shades of green to represent happiness levels. The chart indicates that individuals with higher education, such as graduate degrees, are more likely to report higher happiness levels, while other education categories exhibit more uniform distributions. Proportional stacking and color differentiation help compare trends effectively across education levels.
 
 \newpage
 
-**satjob:** A categorical variable indicating an individual's level of job satisfaction (e.g., "Very Satisfied"). "This variable classifies respondents into different job satisfaction categories, such as 'Very Satisfied,' 'Moderately Satisfied,' 'A Little Dissatisfied,' and 'Very Dissatisfied.' It provides insight into the respondent's feelings about their job and is used to analyze its potential impact on various aspects of well-being, including happiness levels."
+**satjob:** A categorical variable indicating an individual's level of job satisfaction (e.g., "Very Satisfied"). "This variable categorizes respondents by their job satisfaction levels: 'Very Satisfied,' 'Moderately Satisfied,' 'A Little Dissatisfied,' and 'Very Dissatisfied.' It indicates respondents' attitudes toward their jobs and is analyzed for its influence on happiness levels."
 
 ```{r}
 #| echo: false
@@ -291,11 +292,11 @@ ggplot(data, aes(x = satjob, fill = happy)) +
 
 
 ```
-@fig-Satjob illustrates the relationship between job satisfaction and happiness levels, with data points grouped by satisfaction categories for clarity. The bars represent the proportion of happiness levels across different job satisfaction levels, with distinct shades of green used to differentiate happiness categories. The chart highlights that individuals who are more satisfied with their jobs tend to report higher levels of happiness, while those with lower satisfaction show a more diverse distribution. The use of proportional stacking and color differentiation helps in visually comparing the trends across job satisfaction levels.
+@fig-Satjob illustrates the relationship between job satisfaction and happiness levels, with data points grouped by satisfaction categories for clarity. The bars display the proportion of happiness levels by job satisfaction categories, using distinct shades of green to represent happiness levels. The chart indicates that individuals with higher job satisfaction are more likely to report greater happiness, while those with lower satisfaction exhibit a broader distribution. Proportional stacking and color differentiation facilitate comparisons across job satisfaction levels.
 
 \newpage
 
-**realrinc:** A numerical variable indicating an individual's real income (e.g., "50000"). "This variable measures the respondent's actual income adjusted for inflation, providing a more accurate representation of purchasing power. It is used to classify respondents into different income levels and analyze its potential impact on various aspects of well-being, including happiness levels. Real income offers valuable insights into the economic conditions of respondents and their correlation with life satisfaction."
+**realrinc:** A numerical variable indicating an individual's real income (e.g., "50000"). "This variable represents respondents' inflation-adjusted income, accurately reflecting their purchasing power. It classifies respondents into income levels and analyzes its impact on happiness. Real income captures economic conditions and their association with life satisfaction."
 
 ```{r}
 #| echo: false
@@ -343,7 +344,7 @@ The objective of our modeling approach is to predict the likelihood of individua
 
 We utilized a Bayesian Logistic Regression model to estimate the probability of individuals being "very happy." The outcome variable is binary, where 1 represents individuals who are "very happy," and 0 represents others.
 
-In constructing the model, the predictors selected are directly aligned with the variables discussed in the data section. For example, marital status is included as it is a key socio-economic factor influencing happiness, with prior research showing its strong relationship to well-being. Number of children is included as it can introduce both positive and negative effects on happiness, depending on familial dynamics and financial responsibilities. This variable was treated as a continuous predictor, capturing the direct impact of family size, rather than categorizing it into bins, to retain the nuance in the number of children.
+In constructing the model, the predictors selected are directly aligned with the variables discussed in the data section. For example, marital status is included as it is a key socio-economic factor influencing happiness, with prior research showing its strong relationship to well-being. Number of children is included as it can introduce both positive and negative effects on happiness, depending on familial dynamics and financial responsibilities. This variable was treated as a continuous predictor, capturing the direct impact of family size, rather than categorizing it into bins, to retain the detailed effects of the number of children.
 
 Age was treated as a continuous variable, rather than categorizing it into specific age groups, in order to retain more detailed information and reflect the continuous nature of age's impact on happiness, as supported by prior literature. This decision avoids the loss of variability that might occur with grouped age ranges. Similarly, education level and job satisfaction are included as categorical predictors to capture distinct group differences while preserving important socio-economic distinctions that are likely to influence happiness.
 
@@ -388,16 +389,17 @@ Marital status allows us to account for the social and emotional support systems
 
 Education level (degree) provides insight into the role of knowledge and opportunity in shaping well-being, while age captures generational and life-stage effects that may influence happiness levels. The inclusion of gender (sex) enables us to investigate potential disparities in reported happiness between men and women.
 
-The Bayesian Logistic Regression model was chosen for its ability to incorporate prior knowledge and quantify uncertainty in predictions, allowing for a nuanced understanding of the relationships between predictors and happiness. By using weakly informative priors, the model remains flexible while ensuring stable estimation of coefficients. This approach is particularly valuable for exploring individual-level happiness data, where complex interactions and varying effects are expected across predictors.
+The Bayesian Logistic Regression model was chosen for its ability to incorporate prior knowledge and quantify uncertainty in predictions, allowing for a detailed understanding of the relationships between predictors and happiness. By using weakly informative priors, the model remains flexible while ensuring stable estimation of coefficients. This approach is particularly valuable for exploring individual-level happiness data, where complex interactions and varying effects are expected across predictors.
 
 ## Model Summary
-We summarized the results of the Bayesian Logistic Regression model using the `summary` function in R, which provides detailed information about the estimated coefficients, their associated uncertainty, and credible intervals. The coefficients indicate the direction and magnitude of the relationship between predictors and the likelihood of being "very happy."
 
-Additionally, we performed posterior predictive checks using the `pp_check` function to evaluate the fit of the model. These checks demonstrated a reasonable agreement between the predicted and observed values, suggesting that the model effectively captures the patterns in the data.
+We summarized the results of the Bayesian Logistic Regression model using the summary function in R, which provides detailed information about the estimated coefficients, their associated uncertainty, and credible intervals. The coefficients indicate the direction and magnitude of the relationship between predictors and the likelihood of being "very happy."
 
-The estimated coefficients revealed significant associations between happiness levels and predictors such as job satisfaction, marital status, and real income. For example, higher job satisfaction and income were associated with an increased likelihood of being "very happy." The credible intervals provided insights into the uncertainty of these estimates, ensuring a robust interpretation.
+Additionally, we performed posterior predictive checks using the pp_check function to evaluate the fit of the model. These checks indicated a reasonable agreement between the predicted and observed values, suggesting that the model effectively captures the patterns in the data.
 
-We also calculated the average predicted probability of being "very happy" across the dataset, which highlights the overall effectiveness of the predictors in explaining variations in happiness levels. These results provide meaningful insights into the factors that contribute to individual happiness.
+The estimated coefficients revealed significant associations between happiness levels and predictors such as job satisfaction, marital status, and real income. For example, higher job satisfaction and income were associated with an increased likelihood of being "very happy." The credible intervals provided findings about the uncertainty of these estimates, ensuring a robust interpretation.
+
+We also calculated the average predicted probability of being "very happy" across the dataset, which highlights the overall effectiveness of the predictors in explaining variations in happiness levels. These results provide meaningful findings about the factors that contribute to individual happiness.
 
 # Results {#sec-result}
 
@@ -469,13 +471,15 @@ kable(
 
 ```
 
-As detailed in @tbl-happiness_model_summary, the coefficient summary offers a quantitative perspective on the socio-economic and demographic determinants of individual happiness. For instance, the estimated coefficient for **Marital Status: Married** is significantly positive (Mean = 0.80), indicating that married individuals are more likely to report higher levels of happiness compared to those in the reference category (e.g., never married). This underscores the role of marital status in fostering emotional and social well-being.
+## Coefficient Summary {#sec-coefficient-summary}
+
+As detailed in @tbl-happiness_model_summary, the coefficient summary offers a quantitative perspective on the socio-economic and demographic determinants of individual happiness. For instance, the estimated coefficient for **Marital Status: Married** is significantly positive (Mean = 0.80), indicating that married individuals are more likely to report higher levels of happiness compared to those in the reference category (e.g., never married). This highlights the role of marital status in fostering emotional and social well-being.
 
 In contrast, the coefficient for **Number of Children** is slightly negative (Mean = -0.10), suggesting that larger family sizes are associated with a marginal decrease in happiness. This result likely reflects the added responsibilities and financial burdens inherent in raising children. Similarly, the coefficient for **Age** (Mean = -0.02) suggests a gradual decline in happiness as individuals age, potentially indicating shifting priorities or life circumstances.
 
-Positive coefficients for **Education Level: Graduate** (Mean = 0.50) and **Job Satisfaction: Moderately Satisfied** (Mean = 0.70) highlight the robust relationship between higher educational attainment, workplace satisfaction, and enhanced happiness. Furthermore, the coefficient for **Real Income** (Mean = 0.02) demonstrates a small but positive effect, affirming the correlation between financial stability and happiness, albeit with diminishing returns.
+Positive coefficients for **Education Level: Graduate** (Mean = 0.50) and **Job Satisfaction: Moderately Satisfied** (Mean = 0.70) highlight the strong relationship between higher educational attainment, workplace satisfaction, and enhanced happiness. Furthermore, the coefficient for **Real Income** (Mean = 0.02) demonstrates a small but positive effect, affirming the correlation between financial stability and happiness, albeit with diminishing returns.
 
-The Intercept (Mean = -1.50) serves as the baseline log-odds for happiness, providing a reference point against which the impact of other predictors is measured. Collectively, these coefficients elucidate the intricate interplay of socio-economic and demographic factors in shaping happiness, emphasizing the critical role of both external stability and personal well-being in determining life satisfaction.
+The Intercept (Mean = -1.50) serves as the baseline log-odds for happiness, providing a reference point against which the impact of other predictors is measured. Collectively, these coefficients clarify the complex interplay of socio-economic and demographic factors in shaping happiness, emphasizing the important role of both external stability and personal well-being in determining life satisfaction.
 
 ```{r}
 #| label: fig-happiness_model_coefficients
@@ -506,35 +510,35 @@ mcmc_intervals(posterior, prob = 0.9) +
     plot.subtitle = element_text(hjust = 0.5) # Center the subtitle
   )
 ```
-As illustrated in @fig-happiness_model_coefficients, the Bayesian logistic regression model provides a comprehensive visualization of the influence of predictor variables on happiness. Each point represents the posterior mean estimate, with horizontal lines denoting the 90% credible intervals, offering a robust measure of uncertainty. Key insights include:
+As illustrated in @fig-happiness_model_coefficients, the Bayesian logistic regression model provides a clear visualization of the influence of predictor variables on happiness. Each point represents the posterior mean estimate, with horizontal lines denoting the 90% credible intervals, offering a reliable measure of uncertainty. Key findings include:
 
-- The coefficient for **`Marital Status: Married`** is notably positive, indicating that married individuals are significantly more likely to report higher happiness levels compared to those in the reference category (e.g., never married). This finding underscores the pivotal role of marital relationships in fostering well-being.
+- The coefficient for **`Marital Status: Married`** is notably positive, indicating that married individuals are significantly more likely to report higher happiness levels compared to those in the reference category (e.g., never married). This finding highlights the importance of marital relationships in fostering well-being.
 
-- **`Education Level: Graduate`** and **`Job Satisfaction: Moderately Satisfied`** exhibit substantial positive effects, emphasizing the critical importance of advanced education and workplace satisfaction in enhancing happiness.
+- **`Education Level: Graduate`** and **`Job Satisfaction: Moderately Satisfied`** exhibit substantial positive effects, underscoring the significant influence of advanced education and workplace satisfaction in enhancing happiness.
 
 - In contrast, the coefficients for **`Number of Children`** and **`Age`** are negative, suggesting that having more children and aging are associated with slight reductions in happiness. These results may reflect the increased financial and caregiving responsibilities tied to larger families, as well as potential shifts in life priorities with age.
 
 - The variable **`Real Income`** demonstrates a modest positive effect, signifying that higher income contributes to increased happiness, albeit with a relatively small magnitude.
 
-Taken together, these findings illuminate the complex interplay of socio-economic and demographic factors shaping individual happiness, providing valuable evidence for targeted interventions aimed at enhancing well-being.
+Taken together, these findings shed light on the complex interplay of socio-economic and demographic factors shaping individual happiness, providing strong support for targeted interventions aimed at enhancing well-being.
 
 \newpage
 
 # Discussion {#sec-discussion}
 
-This study investigates the determinants of individual happiness by employing a Bayesian logistic regression model to analyze self-reported happiness levels. Through the careful selection of socio-economic and demographic variables, this research identifies critical factors influencing well-being and their relative importance, providing valuable insights into the complex interplay of variables shaping happiness.
+This study investigates the determinants of individual happiness by employing a Bayesian logistic regression model to analyze self-reported happiness levels. Through the careful selection of socio-economic and demographic variables, this research identifies key factors influencing well-being and their relative importance, providing a detailed understanding of the variables shaping happiness.
 
 ## Detailed Exploration of Factors Influencing Happiness
 
 The analysis prioritizes variables—marital status, job satisfaction, education level, income, age, and number of children—based on their theoretical relevance and empirical association with happiness. This selection ensures that the model reflects real-world dynamics affecting well-being. Findings underscore the strong predictive power of marital status and job satisfaction, as married individuals and those who report high job satisfaction are significantly more likely to describe themselves as "very happy." These results align with established theories emphasizing the role of emotional and economic stability in fostering happiness.
 
-A nuanced relationship emerges for the number of children, where larger family sizes are associated with marginally lower happiness levels, likely due to increased caregiving and financial responsibilities. Similarly, age shows a slight negative association with happiness, reflecting shifts in life priorities over time. In contrast, higher education levels and income exhibit positive effects, reinforcing the importance of socio-economic stability and opportunities in improving life satisfaction. These findings offer a comprehensive perspective on the intricate relationships among socio-economic and demographic factors influencing happiness.
+A complex relationship emerges for the number of children, where larger family sizes are associated with marginally lower happiness levels, likely due to increased caregiving and financial responsibilities. Similarly, age shows a slight negative association with happiness, reflecting shifts in life priorities over time. In contrast, higher education levels and income exhibit positive effects, reinforcing the importance of socio-economic stability and opportunities in improving life satisfaction. These findings provide a comprehensive perspective on the relationships among socio-economic and demographic factors influencing happiness.
 
 ## Strategic Implications of Variable Selection
 
-The deliberate focus on variables with strong theoretical and empirical foundations underscores the multidimensional nature of happiness. Marital status and job satisfaction emerge as robust predictors, reflecting their significant emotional and economic impact. The inclusion of education and income highlights the role of socio-economic stability in fostering well-being, while the nuanced effects of age and family size reveal deeper complexities in how life circumstances shape happiness.
+The deliberate focus on variables with strong theoretical and empirical foundations underscores the diverse factors contributing to happiness. Marital status and job satisfaction emerge as robust predictors, reflecting their significant emotional and economic impact. The inclusion of education and income highlights the role of socio-economic stability in fostering well-being, while the effects of age and family size reveal deeper complexities in how life circumstances shape happiness.
 
-Although this study excludes variables such as occupational categories or regional differences to streamline the model, these factors represent promising avenues for future research. For example, exploring the influence of specific professions or geographic contexts could shed light on cultural and environmental interactions with socio-economic predictors. Such investigations would refine current models and expand the understanding of happiness determinants.
+Although this study excludes variables such as occupational categories or regional differences to streamline the model, these factors represent promising avenues for future research. For example, exploring the influence of specific professions or geographic contexts could reveal cultural and environmental interactions with socio-economic predictors. Such investigations would refine current models and expand the understanding of happiness determinants.
 
 
 ## Weaknesses and Future Research Directions
@@ -557,9 +561,10 @@ By building on this study’s findings, future research can deepen our understan
 
 ## The Value of Insights into Happiness Drivers
 
-This study demonstrates the critical importance of understanding the determinants of happiness. Findings such as the significant roles of marital status and job satisfaction offer actionable insights for policymakers and employers to design strategies aimed at enhancing well-being. The positive relationship between higher education and happiness highlights the societal value of investing in equitable education systems, reinforcing the importance of socio-economic stability in fostering life satisfaction.
+This study demonstrates the importance of understanding the determinants of happiness. Findings such as the significant roles of marital status and job satisfaction offer actionable recommendations for policymakers and employers to design strategies aimed at enhancing well-being. The positive relationship between higher education and happiness emphasizes the societal importance of investing in equitable education systems, reinforcing the role of socio-economic stability in fostering life satisfaction.
 
 By advancing the understanding of happiness drivers, this research contributes to the broader discourse on well-being and offers a foundation for future studies and interventions aimed at improving individual and societal outcomes.
+
 
 
 \newpage
@@ -574,9 +579,9 @@ By advancing the understanding of happiness drivers, this research contributes t
 
 ## Posterior predictive check
 
-In @fig-ppcheckandposteriorvsprior-1, we conduct a posterior predictive check to assess the fit of the Bayesian logistic regression model. This plot compares the observed data (*y*) with the replicated data (*y_rep*) generated by the model. The overlaid density curves represent multiple posterior predictive distributions, visually demonstrating how well the model captures the observed data. The close alignment of the observed and predicted distributions suggests that the model provides a reasonable fit, effectively capturing both the central tendencies and variability in the data.
+In @fig-ppcheckandposteriorvsprior-1, we conduct a posterior predictive check to assess the fit of the Bayesian logistic regression model. This plot compares the observed data (*y*) with the replicated data (*y_rep*) generated by the model. The overlaid density curves represent multiple posterior predictive distributions, visually indicating how well the model aligns with the observed data. The close alignment of the observed and predicted distributions suggests that the model provides a reasonable fit, accurately reflecting both central tendencies and variability in the data.
 
-In @fig-ppcheckandposteriorvsprior-2, we compare the posterior distributions of the model parameters with their corresponding priors. This plot illustrates the extent to which the data influences the parameter estimates. The divergence between the posterior and prior distributions reflects the strength of the evidence provided by the data, demonstrating how the Bayesian model updates prior assumptions to produce refined parameter estimates. This comparison underscores the importance of data in shaping the final inference and validating the robustness of the model. 
+In @fig-ppcheckandposteriorvsprior-2, we compare the posterior distributions of the model parameters with their corresponding priors. This plot illustrates the influence of the data on parameter estimates. The divergence between the posterior and prior distributions highlights the strength of the evidence provided by the data, showing how the Bayesian model refines prior assumptions to produce updated parameter estimates. This comparison emphasizes the role of the data in shaping final inferences and validating the robustness of the model.
 
 ```{r}
 #| eval: true
@@ -606,19 +611,13 @@ posterior_vs_prior(happiness_model) +
 
 ## Diagnostics
 
-@fig-stanareyouokay-1 is a trace plot, depicting the sampled values of each parameter over iterations. The plot shows that the chains for each parameter exhibit patterns resembling a 'hairy caterpillar,' indicating well-mixed chains that thoroughly explore the posterior distribution. This visual evidence strongly suggests that the Markov chains have likely converged, ensuring the reliability of posterior estimates.
+@fig-stanareyouokay-1 is a trace plot, depicting the sampled values of each parameter over iterations. The plot shows that the chains for each parameter exhibit patterns resembling a 'hairy caterpillar,' indicating well-mixed chains that effectively explore the posterior distribution. This evidence suggests that the Markov chains have likely converged, ensuring the reliability of posterior estimates.
 
-This plot is a crucial diagnostic tool, verifying that the sampling process is effective and that the model's posterior distributions are credible.
+This plot serves as a key diagnostic tool, verifying that the sampling process is efficient and that the model's posterior distributions are credible.
 
-As shown in @fig-stanareyouokay-2, the Rhat values are close to 1, indicating that the chains have likely converged and the model results are reliable.
+As shown in @fig-stanareyouokay-2, the Rhat values are close to 1, further confirming that the chains have likely converged and the model results are reliable.
 
-Together, these diagnostic plots affirm the validity of the Bayesian model's posterior distributions, enabling trustworthy inference based on the sampled data.
-
-
-
-
-
-
+Together, these diagnostic plots validate the Bayesian model's posterior distributions, supporting robust inference based on the sampled data.
 
 
 ```{r}
@@ -641,9 +640,9 @@ plot(happiness_model, "rhat")
 ```
 
 
-As shown in @fig-posterior, the graph visualizes the posterior distributions of the parameters from the Bayesian logistic regression model analyzing happiness predictors. Each horizontal line represents the **90% credible interval**, centered around the median of the posterior distribution for a given parameter. The shaded areas depict the density of the posterior distribution, providing insights into the uncertainty and variability of the parameter estimates.
+As shown in @fig-posterior, the graph visualizes the posterior distributions of the parameters from the Bayesian logistic regression model analyzing happiness predictors. Each horizontal line represents the **90% credible interval**, centered around the median of the posterior distribution for a given parameter. The shaded areas depict the density of the posterior distribution, illustrating the uncertainty and variability of the parameter estimates.
 
-The parameters encompass socio-economic and demographic factors, such as marital status, job satisfaction, education level, and income. Notably, parameters like **Marital Status: Married** and **Job Satisfaction: Very Satisfied** exhibit positive median values, suggesting a strong positive association with happiness. In contrast, variables such as **Number of Children** and **Age** show slightly negative median values, indicating a modest decline in happiness with increasing age and family size. This visualization highlights the nuanced relationships between these predictors and individual happiness.
+The parameters encompass socio-economic and demographic factors, such as marital status, job satisfaction, education level, and income. Notably, parameters like **Marital Status: Married** and **Job Satisfaction: Very Satisfied** exhibit positive median values, indicating a positive association with happiness. In contrast, variables such as **Number of Children** and **Age** show slightly negative median values, reflecting a modest decline in happiness with increasing age and family size. This visualization emphasizes the complex relationships between these predictors and individual happiness.
 
 
 ```{r}
@@ -750,6 +749,13 @@ To analyze the collected data, a Bayesian logistic regression model will be appl
 This comprehensive methodology ensures reliable insights into the complex factors shaping individual happiness while laying the groundwork for future studies on well-being determinants.
 
 ## Idealized Survey
+
+Welcome to the "Factors Influencing Happiness Survey." This survey seeks to explore the relationship between socio-economic factors, personal characteristics, and individual well-being. Your responses will remain anonymous and contribute to research aimed at understanding the determinants of happiness. Completing the survey will take approximately 5–7 minutes. Thank you for your valuable participation! 
+
+If you have any questions or concerns, please contact: 
+
+- **Survey Coordinator**: Shuheng (Jack) Zhou
+- **Email**: [shuheng.zhou@mail.utoronto.ca](mailto:shuheng.zhou@mail.utoronto.ca)
 
 1. **What is your marital status?**
 
