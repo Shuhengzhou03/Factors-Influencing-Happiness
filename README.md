@@ -1,4 +1,4 @@
-# What Makes Us Happy? Unveiling the Impact of Social, Economic, and Personal Factors
+# What Makes Us Happy? Examining the Impact of Social, Economic, and Personal Factors
 
 ## Overview
 
