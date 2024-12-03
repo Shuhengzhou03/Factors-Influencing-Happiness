@@ -57,13 +57,13 @@ The estimand of this study is the probability of an individual self-reporting as
 Through this model, the study aims to quantify the independent impact of each variable on happiness, assessing their contributions to individual happiness while controlling for other factors. The findings not only provide a better understanding of the determinants of happiness but also offer empirical support for policies aimed at enhancing societal well-being.
 
 # Data {#sec-data}
-
-## Measurement
-
+## Data Source
 
 The data utilized in this study was sourced from the [GSS Data Explorer](https://gssdataexplorer.norc.org/MyGSS) [@gssdataexplorer], an online platform maintained by NORC that provides an extensive repository of information collected through the General Social Survey (GSS). The GSS dataset captures a wide range of social, economic, and personal characteristics, making it a useful resource for analyzing societal behaviors and trends. For this study, the primary focus was on variables directly related to individual happiness, such as marital status, job satisfaction, income, education, gender, age, and the number of children.
 
 In addition to the GSS dataset, there are other datasets that could have been used to analyze the factors influencing happiness. For example, the European Social Survey (ESS) provides rich data on life satisfaction and happiness, but it primarily focuses on European countries, making it less suitable for this study's focus on American society. In contrast, the GSS dataset is centered on the U.S. population, offering more relevant data for examining the impact of socio-economic conditions and personal characteristics on happiness in the United States. Similarly, the World Values Survey (WVS) offers global social-economic data, but due to its broad scope, it may not be as suitable for focusing on happiness factors specific to the U.S. population. The American Time Use Survey (ATUS) primarily focuses on time allocation rather than directly measuring life satisfaction or happiness, making it less aligned with the objectives of this study. The GSS dataset was chosen for its focus on U.S. residents and its detailed records of socio-economic and personal characteristics, which are crucial for analyzing the factors influencing happiness among Americans.
+
+## Measurement
 
 The process of transforming real-world phenomena into data entries begins with the GSS survey design, where participants are asked a series of standardized questions designed to capture their demographic and socio-economic characteristics, as well as subjective well-being. For example:
 
@@ -96,7 +96,7 @@ Through these tools and methods, the study systematically cleaned and analyzed t
 #| message: false
 #| echo: false
 #| label: tbl-happiness_preview
-#| tbl-cap: "Happiness Data Sample Preview"
+#| tbl-cap: "Sample Preview of Happiness Data: A snapshot showing key variables"
 
 # Random sampling if needed
 set.seed(131)
@@ -119,7 +119,7 @@ data %>%
 Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
 
 
-## variables
+## Variables
 
 ### Outcome Variables
 
@@ -142,8 +142,8 @@ The primary focus of this analysis is the variable **`happy`**, which serves as 
 ```{r}
 #| echo: false
 #| warning: false
-#| label: fig-Marital
-#| fig-cap: Happiness Levels Across Different Marital Statuses
+#| label: fig-MaritalStatusDistribution
+#| fig-cap: "Happiness Levels Across Different Marital Statuses: Depicting the Distribution of Self-Reported Happiness Levels ('Very Happy', 'Pretty Happy', 'Not Too Happy') by Marital Status Categories"
 
 
 # Filter out rows with NA values in 'happy' or 'marital'
@@ -180,7 +180,7 @@ ggplot(data, aes(x = marital, fill = happy)) +
 ```
 
 
-@fig-Marital illustrates the relationship between marital status and happiness levels, with data points grouped by marital categories for clarity. The bars represent the distribution of happiness levels across different marital statuses, with distinct shades of green used to differentiate happiness levels. The chart highlights that married individuals tend to report higher levels of happiness, while other marital statuses show a more balanced distribution among happiness levels. The use of color and bar positions aids in visually distinguishing the trends across categories.
+@fig-MaritalStatusDistribution illustrates the relationship between marital status and happiness levels, with data points grouped by marital categories for clarity. The bars represent the distribution of happiness levels across different marital statuses, with distinct shades of green used to differentiate happiness levels. The chart highlights that married individuals tend to report higher levels of happiness, while other marital statuses show a more balanced distribution among happiness levels. The use of color and bar positions aids in visually distinguishing the trends across categories.
 
 \newpage
 
@@ -189,16 +189,18 @@ ggplot(data, aes(x = marital, fill = happy)) +
 ```{r}
 #| echo: false
 #| warning: false
-#| label: fig-Childs
-#| fig-cap: Distribution of the Number of Children by Happiness Level
+#| label: fig-ChildrenDistribution
+#| fig-cap: "Distribution of the Number of Children by Happiness Level: Showing Family Size Across Different Happiness Categories"
+
 
 # Filter out non-finite values (NA or Inf)
 data <- data %>%
   filter(!is.na(childs), is.finite(childs))  # Remove NA or infinite values
 
-# Create a boxplot
+# Create a violin plot with jittered points
 ggplot(data, aes(x = happy, y = childs, fill = happy)) +
-  geom_boxplot(outlier.color = "red", outlier.size = 1.5) +  # Show outliers as red dots
+  geom_violin(trim = TRUE, alpha = 0.7) +  # Violin plot to show distribution
+  geom_jitter(width = 0.2, alpha = 0.4, color = "black", size = 1) +  # Add jitter points for raw data
   scale_fill_manual(values = c(
     "pretty happy" = "#41AB5D",  # Dark green
     "very happy" = "#00441B",    # Medium green
@@ -212,12 +214,16 @@ ggplot(data, aes(x = happy, y = childs, fill = happy)) +
   ) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
-    plot.title = element_text(face = "bold", hjust = 0.5)  # Bold and center the title
+    plot.title = element_text(face = "bold", hjust = 0.5),  # Bold and center the title
+    legend.title = element_text(face = "bold"),  # Bold legend title
+    panel.grid.major = element_blank(),  # Remove major gridlines
+    panel.grid.minor = element_blank()   # Remove minor gridlines
   )
 
-
 ```
-@fig-Childs illustrates the relationship between the number of children and happiness levels, with data points grouped by happiness categories for clarity. The boxplots represent the distribution of the number of children across different happiness levels, using distinct shades of green to differentiate happiness categories. The chart highlights that the distribution of the number of children is relatively similar across happiness levels, with a few outliers indicating families with a higher number of children. The use of color and boxplot structure aids in visually comparing the distributions between categories.
+@fig-ChildrenDistribution illustrates the relationship between the number of children and happiness levels, with data points grouped by happiness categories for better clarity. The violin plots display the density distribution of the number of children across the three happiness levels: "Not Too Happy," "Pretty Happy," and "Very Happy," differentiated by distinct shades of green. Additionally, jittered points overlay the violin plots, representing individual observations, thereby providing a detailed view of the raw data.
+
+The chart highlights that the number of children is distributed similarly across happiness levels, with the highest density of observations clustering around smaller family sizes. A few data points stand out as outliers, representing families with larger numbers of children. This combination of violin plots and jittered points effectively showcases both the overall trends and individual variances, making the relationships between family size and happiness levels visually accessible and easy to interpret.
 
 \newpage
 
@@ -226,8 +232,8 @@ ggplot(data, aes(x = happy, y = childs, fill = happy)) +
 ```{r}
 #| echo: false
 #| warning: false
-#| label: fig-Degree
-#| fig-cap: Proportion of Happiness Levels by Education Level
+#| label: fig-EducationHappinessDistribution
+#| fig-cap: "Proportion of Happiness Levels by Education Level: Representing the Distribution of Happiness Categories Across Different Levels of Educational Attainment"
 
 data <- data %>%
   filter(!is.na(degree), !is.na(happy))  
@@ -254,7 +260,7 @@ ggplot(data, aes(x = degree, fill = happy)) +
 
 
 ```
-@fig-Degree illustrates the relationship between education level and happiness levels, with data points grouped by educational categories for clarity. The bars display the proportion of happiness levels by education categories, using distinct shades of green to represent happiness levels. The chart indicates that individuals with higher education, such as graduate degrees, are more likely to report higher happiness levels, while other education categories exhibit more uniform distributions. Proportional stacking and color differentiation help compare trends effectively across education levels.
+@fig-EducationHappinessDistribution illustrates the relationship between education level and happiness levels, with data points grouped by educational categories for clarity. The bars display the proportion of happiness levels by education categories, using distinct shades of green to represent happiness levels. The chart indicates that individuals with higher education, such as graduate degrees, are more likely to report higher happiness levels, while other education categories exhibit more uniform distributions. Proportional stacking and color differentiation help compare trends effectively across education levels.
 
 \newpage
 
@@ -263,8 +269,9 @@ ggplot(data, aes(x = degree, fill = happy)) +
 ```{r}
 #| echo: false
 #| warning: false
-#| label: fig-Satjob
-#| fig-cap: Proportion of Happiness Levels by Job Satisfaction
+#| label: fig-JobSatisfactionHappiness
+#| fig-cap: "Proportion of Happiness Levels by Job Satisfaction: Depicting the Distribution of Self-Reported Happiness Categories Across Different Job Satisfaction Levels"
+
 
 
 data <- data %>%
@@ -292,7 +299,7 @@ ggplot(data, aes(x = satjob, fill = happy)) +
 
 
 ```
-@fig-Satjob illustrates the relationship between job satisfaction and happiness levels, with data points grouped by satisfaction categories for clarity. The bars display the proportion of happiness levels by job satisfaction categories, using distinct shades of green to represent happiness levels. The chart indicates that individuals with higher job satisfaction are more likely to report greater happiness, while those with lower satisfaction exhibit a broader distribution. Proportional stacking and color differentiation facilitate comparisons across job satisfaction levels.
+@fig-JobSatisfactionHappiness illustrates the relationship between job satisfaction and happiness levels, with data points grouped by satisfaction categories for clarity. The bars display the proportion of happiness levels by job satisfaction categories, using distinct shades of green to represent happiness levels. The chart indicates that individuals with higher job satisfaction are more likely to report greater happiness, while those with lower satisfaction exhibit a broader distribution. Proportional stacking and color differentiation facilitate comparisons across job satisfaction levels.
 
 \newpage
 
@@ -301,8 +308,9 @@ ggplot(data, aes(x = satjob, fill = happy)) +
 ```{r}
 #| echo: false
 #| warning: false
-#| label: fig-Realrinc
-#| fig-cap: Real Income vs. Happiness Level
+#| label: fig-IncomeHappiness
+#| fig-cap: "Real Income and Happiness Level: This analysis explores the distribution of real income across different happiness categories, using jitter points to illustrate the variability of individual data within each category"
+
 
 data <- data %>%
   filter(
@@ -334,7 +342,7 @@ ggplot(data, aes(x = happy, y = realrinc, color = happy)) +
 
 
 ```
-@fig-Realrinc illustrates the relationship between real income and happiness levels, with data points grouped by happiness categories for clarity. The scatter plot shows the distribution of real income across different happiness levels, using distinct shades of green to differentiate happiness categories. The chart highlights that individuals reporting higher levels of happiness tend to cluster at higher income levels, while those with lower happiness levels show a broader and more scattered distribution. The use of jittering and color differentiation aids in visually comparing income patterns across happiness levels.
+@fig-IncomeHappiness illustrates the relationship between real income and happiness levels, with data points grouped by happiness categories for clarity. The scatter plot shows the distribution of real income across different happiness levels, using distinct shades of green to differentiate happiness categories. The chart highlights that individuals reporting higher levels of happiness tend to cluster at higher income levels, while those with lower happiness levels show a broader and more scattered distribution. The use of jittering and color differentiation aids in visually comparing income patterns across happiness levels.
 
 \newpage
 
@@ -400,6 +408,19 @@ Additionally, we performed posterior predictive checks using the pp_check functi
 The estimated coefficients revealed significant associations between happiness levels and predictors such as job satisfaction, marital status, and real income. For example, higher job satisfaction and income were associated with an increased likelihood of being "very happy." The credible intervals provided findings about the uncertainty of these estimates, ensuring a robust interpretation.
 
 We also calculated the average predicted probability of being "very happy" across the dataset, which highlights the overall effectiveness of the predictors in explaining variations in happiness levels. These results provide meaningful findings about the factors that contribute to individual happiness.
+
+## Model Limitations
+
+Although the Bayesian logistic regression model performs well in analyzing the relationship between happiness and its predictors, it still has certain limitations. First, the model assumes a linear relationship between the predictors and the log-odds of happiness, which may overlook complex non-linear or interaction effects between variables. For example, the relationship between age and happiness may exhibit non-linear patterns, leading to potential biases in estimation. Second, the imbalanced distribution of categories in the data—where the "very happy" category has fewer samples—may cause the model to favor predicting the majority classes (e.g., "not too happy" and "pretty happy") while underperforming in classifying the minority class. Lastly, the model employs weakly informative priors (e.g., Normal(0, 2) and Cauchy(0, 2)) to ensure flexibility. However, in cases with small samples or rare categories, these priors may impact the stability of coefficient estimates, increasing uncertainty in the results.
+
+## Alternative Models Considered
+
+The Bayesian logistic regression model was chosen due to its unique ability to incorporate prior knowledge, quantify uncertainty, and provide robust parameter estimates in the analysis of complex individual-level happiness data. Unlike traditional logistic regression, the Bayesian framework allows for the inclusion of weakly informative priors, which help stabilize estimates in the presence of limited or imbalanced data (e.g., the "very happy" category being underrepresented) while avoiding overfitting. This is particularly advantageous in handling imbalanced target variable distributions, where the Bayesian model performs better in classifying minority categories. Additionally, the Bayesian model computes posterior distributions for each predictor, offering a comprehensive understanding of the uncertainty and variability in the estimated effects. This probabilistic framework not only enhances interpretability but also supports better decision-making by providing credible intervals instead of single-point estimates.
+
+In contrast, other models such as decision trees may perform poorly when analyzing complex social data. While decision trees offer advantages in interpretability and handling non-linear relationships, they are highly sensitive to changes in data distribution and noise. In cases of class imbalance, decision trees tend to overfit the majority class, reducing their predictive accuracy for underrepresented categories. Moreover, decision trees lack the ability to provide posterior distributions or quantify uncertainty, making it challenging to robustly evaluate the effects of predictors. These limitations render decision trees less reliable for analyzing complex problems like happiness data.
+
+For these reasons, the Bayesian logistic regression model stands out for its flexibility and robustness, capturing complex non-linear relationships and potential interactions while quantifying uncertainty. It offers more accurate and comprehensive insights for predicting happiness compared to alternative models, making it a superior choice for this analysis.
+
 
 # Results {#sec-result}
 
@@ -572,6 +593,34 @@ By advancing the understanding of happiness drivers, this research contributes t
 \appendix
 
 # Appendix {-}
+
+
+# Data cleaning process
+
+To prepare the dataset for analysis, I conducted a thorough cleaning process to address missing values, inconsistent formatting, and invalid entries, ensuring the data’s accuracy and usability. The cleaning steps were designed to align with the study’s focus on socio-economic and personal factors influencing happiness.
+
+## Handling Missing and Invalid Values
+
+- In the `realrinc` (real income) column, entries coded as `-100` were replaced with `NA` to signify missing data, as `-100` was an invalid placeholder value.
+
+- For categorical variables like `marital`, `degree`, `satjob`, and `happy`, entries such as `.n: no answer` and `.d: do not know/cannot choose` were converted to `NA` to exclude non-informative responses. Additionally, in the `satjob` column, responses marked as `.i: inapplicable` were also replaced with `NA` to ensure only relevant data remained.
+
+## Standardizing Categorical Data
+
+- Categorical variables, including `marital`, `degree`, `sex`, `happy`, `satjob`, and `ballot`, were cleaned by removing extra spaces and converting all text to lowercase to maintain consistency and facilitate accurate analysis.
+
+## Adjusting the `childs` Column
+
+- Entries labeled as `"8 or more"` in the `childs` (number of children) column were replaced with `8`, as this was the maximum numeric representation available. This transformation allowed the variable to be converted into a numeric format for quantitative analysis.
+
+## Converting Data Types
+- Variables like `age` and `childs` were converted to numeric data types to enable proper statistical analysis and modeling.
+
+## Filtering Irrelevant Responses
+- Rows where the `happy` variable contained responses like `.d: do not know/cannot choose` or `.n: no answer` were removed to ensure the dataset only included valid observations relevant to the study’s goal of understanding happiness.
+
+## Summary
+These cleaning steps were essential for maintaining data integrity and ensuring that the analysis would provide meaningful and reliable results. By standardizing and filtering the data, the study could focus on valid and interpretable responses, minimizing noise and maximizing the quality of insights derived from the dataset.
 
 
 

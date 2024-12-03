@@ -9,15 +9,10 @@
 
 
 # Install and load necessary packages
-if (!requireNamespace("brms", quietly = TRUE)) {
-  install.packages("brms")
-}
-if (!requireNamespace("arrow", quietly = TRUE)) {
-  install.packages("arrow")
-}
 library(dplyr)
 library(brms)
 library(arrow)
+library(rstanarm)
 
 # Load data
 data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
