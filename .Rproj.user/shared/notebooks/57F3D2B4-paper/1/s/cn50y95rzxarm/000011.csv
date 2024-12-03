@@ -1,3 +1,0 @@
-"0",""
-"0","# Rhat plot to check convergence for the happiness model"
-"0","plot(happiness_model, ""rhat"")"
