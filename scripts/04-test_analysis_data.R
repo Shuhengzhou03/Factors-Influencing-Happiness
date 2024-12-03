@@ -10,94 +10,65 @@
 # Load required packages
 library(dplyr)
 library(readr)
+library(testthat)
 
 # Load data
 data <- read_csv("data/02-analysis_data/cleaned_happiness_data.csv")
 
-# Define a test function
-check <- function(condition, success_msg, fail_msg) {
-  if (condition) {
-    message(success_msg)
-  } else {
-    stop(fail_msg)
-  }
-}
+# Begin tests
+test_that("Dataset contains at least 100 rows", {
+  expect_true(nrow(data) >= 100, info = "Fail: The dataset contains fewer than 100 rows")
+})
 
-#### Data Testing ####
+test_that("All required columns are present", {
+  required_columns <- c("realrinc", "happy", "satjob", "childs", "age", "degree", "sex", "marital")
+  expect_true(all(required_columns %in% colnames(data)), 
+              info = paste("Fail: The following columns are missing: ", 
+                           paste(setdiff(required_columns, colnames(data)), collapse = ", ")))
+})
 
-# Test 1: Check the number of rows
-check(
-  nrow(data) >= 100,
-  "Pass: The dataset contains at least 100 rows",
-  "Fail: The dataset contains fewer than 100 rows"
-)
+test_that("All values in realrinc are non-negative", {
+  expect_true(all(data$realrinc >= 0, na.rm = TRUE), 
+              info = "Fail: realrinc contains negative values")
+})
 
-# Test 2: Check if all required columns exist
-required_columns <- c("realrinc", "happy", "satjob", "childs", "age", "degree", "sex", "marital")
-check(
-  all(required_columns %in% colnames(data)),
-  "Pass: All required columns are present",
-  paste("Fail: The following columns are missing: ", paste(setdiff(required_columns, colnames(data)), collapse = ", "))
-)
+test_that("All values in childs are within the valid range (0 to 8)", {
+  expect_true(all(data$childs >= 0 & data$childs <= 8, na.rm = TRUE), 
+              info = "Fail: childs contains invalid values")
+})
 
-# Test 3: Check if all values in realrinc are non-negative
-check(
-  all(data$realrinc >= 0, na.rm = TRUE),
-  "Pass: All values in realrinc are non-negative",
-  "Fail: realrinc contains negative values"
-)
+test_that("All values in age are within the valid range (18 to 120)", {
+  expect_true(all(data$age >= 18 & data$age <= 120, na.rm = TRUE), 
+              info = "Fail: age contains invalid values")
+})
 
-# Test 4: Check if all values in childs are within the valid range (0 to 8)
-check(
-  all(data$childs >= 0 & data$childs <= 8, na.rm = TRUE),
-  "Pass: All values in childs are within the valid range (0 to 8)",
-  "Fail: childs contains invalid values"
-)
+test_that("happy column contains only valid values", {
+  valid_happy <- c("very happy", "pretty happy", "not too happy")
+  expect_true(all(data$happy %in% valid_happy, na.rm = TRUE), 
+              info = "Fail: happy column contains invalid values")
+})
 
-# Test 5: Check if all values in age are within the valid range (18 to 120)
-check(
-  all(data$age >= 18 & data$age <= 120, na.rm = TRUE),
-  "Pass: All values in age are within the valid range (18 to 120)",
-  "Fail: age contains invalid values"
-)
+test_that("sex column contains only 'male' and 'female'", {
+  valid_sex <- c("male", "female")
+  expect_true(all(data$sex %in% valid_sex, na.rm = TRUE), 
+              info = "Fail: sex column contains invalid values")
+})
 
-# Test 6: Check if all values in happy are within the valid range
-valid_happy <- c("very happy", "pretty happy", "not too happy")
-check(
-  all(data$happy %in% valid_happy, na.rm = TRUE),
-  "Pass: happy column contains only valid values",
-  "Fail: happy column contains invalid values"
-)
+test_that("marital column contains only valid values (allowing NA)", {
+  valid_marital <- c("married", "never married", "divorced", "widowed", "separated")
+  expect_true(all(na.omit(data$marital) %in% valid_marital), 
+              info = "Fail: marital column contains invalid values")
+})
 
-# Test 7: Check if sex column contains only "male" and "female"
-valid_sex <- c("male", "female")
-check(
-  all(data$sex %in% valid_sex, na.rm = TRUE),
-  "Pass: sex column contains only 'male' and 'female'",
-  "Fail: sex column contains invalid values"
-)
+test_that("degree column contains only valid education levels (allowing NA)", {
+  valid_degree <- c("high school", "bachelor's", "graduate", "no degree", 
+                    "less than high school", "associate/junior college")
+  expect_true(all(na.omit(data$degree) %in% valid_degree), 
+              info = "Fail: degree column contains invalid values")
+})
 
-# Test 8: Check if marital column contains only valid values (allowing NA)
-valid_marital <- c("married", "never married", "divorced", "widowed", "separated")
-check(
-  all(na.omit(data$marital) %in% valid_marital),  # Ignore NA values
-  "Pass: marital column contains only valid values",
-  "Fail: marital column contains invalid values"
-)
-
-# Test 9: Check if degree column contains only valid education levels (allowing NA)
-valid_degree <- c("high school", "bachelor's", "graduate", "no degree", 
-                  "less than high school", "associate/junior college")
-check(
-  all(na.omit(data$degree) %in% valid_degree),  # Ignore NA values
-  "Pass: degree column contains only valid values",
-  "Fail: degree column contains invalid values"
-)
-
-# Test 10: Check if satjob column contains only valid job satisfaction levels (allowing NA)
-valid_satjob <- c("very satisfied", "moderately satisfied", "a little dissatisfied", "very dissatisfied")
-check(
-  all(na.omit(data$satjob) %in% valid_satjob),  # Ignore NA values
-  "Pass: satjob column contains only valid values",
-  "Fail: satjob column contains invalid values"
-)
+test_that("satjob column contains only valid job satisfaction levels (allowing NA)", {
+  valid_satjob <- c("very satisfied", "moderately satisfied", "a little dissatisfied", "very dissatisfied")
+  expect_true(all(na.omit(data$satjob) %in% valid_satjob), 
+              info = "Fail: satjob column contains invalid values")
+})

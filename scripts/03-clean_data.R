@@ -50,8 +50,6 @@ data <- data %>%
 # Check the cleaned data
 summary(data)
 
-# Save the cleaned data as a CSV file
-write_csv(data, "data/02-analysis_data/cleaned_happiness_data.csv")
 
 # Save the cleaned data as a Parquet file
 write_parquet(data, "data/02-analysis_data/cleaned_happiness_data.parquet")
