@@ -132,9 +132,9 @@ The primary focus of this analysis is the variable **`happy`**, which serves as 
 
 ### Predictor Variables
 
-**age**: Represents the respondent's age, measured in years.
+**age:** Represents the respondent's age, measured in years.
 
-**sex**: Denotes the biological sex of the respondent, categorized as: male and female.
+**sex:** Denotes the biological sex of the respondent, categorized as: male and female.
 
 **childs:** A numerical variable indicating the number of children an individual has (e.g., 2). "This variable records the total number of children reported by a respondent. It shows family size and is used to analyze its potential influence on various aspects of well-being, including happiness levels."
 
