@@ -1,0 +1,512 @@
+# 模型可视化
+rpart.plot(tree_model, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree")
+# 数据分割：70%训练集，30%测试集
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# 构建分类树模型
+tree_model <- rpart(happy ~ age + childs, data = trainData, method = "class", control = rpart.control(maxdepth = 3))
+# 在测试集上进行预测
+predictions <- predict(tree_model, newdata = testData, type = "class")
+# 评估模型
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+print(conf_matrix)
+# 模型可视化
+rpart.plot(tree_model, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree")
+rpart.plot(
+tree_model,
+type = 2,
+extra = 104,
+fallen.leaves = TRUE,
+box.palette = "Blues",  # 使用预定义的蓝色调色板
+main = "Classification Tree"
+)
+# Load data
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# Data cleaning: Remove missing values
+data_cleaned <- na.omit(data[, c("happy", "age", "childs")])
+# Convert the target variable to a factor
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+# Split data: 70% training set, 30% testing set
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# Build the classification tree model
+tree_model <- rpart(happy ~ age + childs, data = trainData, method = "class", control = rpart.control(maxdepth = 3))
+rpart.plot(
+tree_model,
+type = 2,
+extra = 104,
+fallen.leaves = TRUE,
+box.palette = "Blues",
+main = "Classification Tree"
+)
+# Make predictions on the testing set
+predictions <- predict(tree_model, newdata = testData, type = "class")
+# Evaluate the model
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+print(conf_matrix)
+# 加载数据
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# 数据清理：移除缺失值
+data_cleaned <- na.omit(data[, c("happy", "age", "childs", "degree", "sex", "satjob", "realrinc")])
+# 将目标变量转换为因子
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+# 对分类变量进行编码（如 degree、sex、satjob）
+data_cleaned$degree <- as.factor(data_cleaned$degree)
+data_cleaned$sex <- as.factor(data_cleaned$sex)
+data_cleaned$satjob <- as.factor(data_cleaned$satjob)
+# 数据分割：70%训练集，30%测试集
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# 构建分类树模型（使用所有变量）
+tree_model <- rpart(
+happy ~ age + childs + degree + sex + satjob + realrinc,
+data = trainData,
+method = "class",
+control = rpart.control(maxdepth = 5)  # 增加最大深度以捕捉更多模式
+)
+# 可视化分类树
+rpart.plot(
+tree_model,
+type = 2,
+extra = 104,
+fallen.leaves = TRUE,
+box.palette = "Blues",
+main = "Classification Tree with All Variables"
+)
+# 在测试集上进行预测
+predictions <- predict(tree_model, newdata = testData, type = "class")
+# 评估模型
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+print(conf_matrix)
+# 加载数据
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# 数据清理：移除缺失值
+data_cleaned <- na.omit(data[, c("happy", "age", "childs", "degree", "sex", "satjob", "realrinc")])
+# 将目标变量转换为因子
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+# 对分类变量进行编码（如 degree、sex、satjob）
+data_cleaned$degree <- as.factor(data_cleaned$degree)
+data_cleaned$sex <- as.factor(data_cleaned$sex)
+data_cleaned$satjob <- as.factor(data_cleaned$satjob)
+# 数据分割：70%训练集，30%测试集
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# 构建分类树模型（使用所有变量）
+tree_model <- rpart(
+happy ~ age + childs + degree + sex + satjob + realrinc,
+data = trainData,
+method = "class",
+control = rpart.control(maxdepth = 5)  # 增加最大深度以捕捉更多模式
+)
+# 可视化分类树
+rpart.plot(
+tree_model,
+type = 2,
+extra = 104,
+fallen.leaves = TRUE,
+box.palette = "Blues",
+main = "Classification Tree with All Variables"
+)
+# 在测试集上进行预测
+predictions <- predict(tree_model, newdata = testData, type = "class")
+# 评估模型
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+print(conf_matrix)
+# 加载数据
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# 数据清理：移除缺失值
+data_cleaned <- na.omit(data[, c("happy", "age", "childs", "degree", "sex", "satjob", "realrinc")])
+# 将目标变量转换为因子
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+# 对分类变量进行编码（如 degree、sex、satjob）
+data_cleaned$degree <- as.factor(data_cleaned$degree)
+data_cleaned$sex <- as.factor(data_cleaned$sex)
+data_cleaned$satjob <- as.factor(data_cleaned$satjob)
+# 数据分割：70%训练集，30%测试集
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# 构建分类树模型（使用所有变量）
+tree_model <- rpart(
+happy ~ age + childs + degree + sex + satjob + realrinc,
+data = trainData,
+method = "class",
+control = rpart.control(maxdepth = 5)  # 增加最大深度以捕捉更多模式
+)
+# 可视化分类树
+rpart.plot(
+tree_model,
+type = 2,
+extra = 104,
+fallen.leaves = TRUE,
+box.palette = "Blues",
+main = "Classification Tree with All Variables"
+)
+# 在测试集上进行预测
+predictions <- predict(tree_model, newdata = testData, type = "class")
+# 生成混淆矩阵
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+# 打印混淆矩阵和统计结果
+print(conf_matrix)
+# 提取关键信息（如准确率）
+cat("Model Accuracy: ", conf_matrix$overall['Accuracy'], "\n")
+#| echo: false
+#| warning: false
+#| label: fig-Marital
+#| fig-cap: Happiness Levels Across Different Marital Statuses
+# Filter out rows with NA values in 'happy' or 'marital'
+data <- data %>%
+filter(!is.na(happy), !is.na(marital)) %>%  # Exclude rows with NA in 'happy' or 'marital'
+mutate(
+happy = as.factor(happy),
+marital = as.factor(marital)
+)
+# Plot: Happiness Distribution By Marital Status
+ggplot(data, aes(x = marital, fill = happy)) +
+geom_bar(position = "dodge") +
+scale_fill_manual(values = c(
+"pretty happy" = "#41AB5D",  # Dark green
+"very happy" = "#00441B",    # Medium green
+"not too happy" = "#A1D99B"  # Light green
+)) +
+theme_minimal() +
+labs(
+x = "Marital Status",
+y = "Count",
+fill = "Happiness Level"
+) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+plot.title = element_text(face = "bold", hjust = 0.5),  # Center and bold the title
+panel.grid.major = element_blank(),  # Remove gridlines
+panel.grid.minor = element_blank()
+)
+#| echo: false
+#| warning: false
+#| label: fig-Marital
+#| fig-cap: Happiness Levels Across Different Marital Statuses
+# Filter out rows with NA values in 'happy' or 'marital'
+data <- data %>%
+filter(!is.na(happy), !is.na(marital)) %>%  # Exclude rows with NA in 'happy' or 'marital'
+mutate(
+happy = as.factor(happy),
+marital = as.factor(marital)
+)
+# Plot: Happiness Distribution By Marital Status
+ggplot(data, aes(x = marital, fill = happy)) +
+geom_bar(position = "dodge") +
+scale_fill_manual(values = c(
+"pretty happy" = "#41AB5D",  # Dark green
+"very happy" = "#00441B",    # Medium green
+"not too happy" = "#A1D99B"  # Light green
+)) +
+theme_minimal() +
+labs(
+x = "Marital Status",
+y = "Count",
+fill = "Happiness Level"
+) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+plot.title = element_text(face = "bold", hjust = 0.5),  # Center and bold the title
+panel.grid.major = element_blank(),  # Remove gridlines
+panel.grid.minor = element_blank()
+)
+#| echo: false
+#| warning: false
+#| label: fig-Childs
+#| fig-cap: Distribution of the Number of Children by Happiness Level
+# Filter out non-finite values (NA or Inf)
+data <- data %>%
+filter(!is.na(childs), is.finite(childs))  # Remove NA or infinite values
+# Create a violin plot with jittered points
+ggplot(data, aes(x = happy, y = childs, fill = happy)) +
+geom_violin(trim = TRUE, alpha = 0.7) +  # Violin plot to show distribution
+geom_jitter(width = 0.2, alpha = 0.4, color = "black", size = 1) +  # Add jitter points for raw data
+scale_fill_manual(values = c(
+"pretty happy" = "#41AB5D",  # Dark green
+"very happy" = "#00441B",    # Medium green
+"not too happy" = "#A1D99B"  # Light green
+)) +
+theme_minimal() +
+labs(
+title = "Number of Children by Happiness Level",
+x = "Happiness Level",
+y = "Number of Children",
+fill = "Happiness Level"
+) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+plot.title = element_text(face = "bold", hjust = 0.5),  # Bold and center the title
+legend.title = element_text(face = "bold"),  # Bold legend title
+panel.grid.major = element_blank(),  # Optionally remove gridlines
+panel.grid.minor = element_blank()
+#| echo: false
+#| warning: false
+#| label: fig-Childs
+#| fig-cap: Distribution of the Number of Children by Happiness Level
+# Filter out non-finite values (NA or Inf)
+data <- data %>%
+filter(!is.na(childs), is.finite(childs))  # Remove NA or infinite values
+# Create a violin plot with jittered points
+ggplot(data, aes(x = happy, y = childs, fill = happy)) +
+geom_violin(trim = TRUE, alpha = 0.7) +  # Violin plot to show distribution
+geom_jitter(width = 0.2, alpha = 0.4, color = "black", size = 1) +  # Add jitter points for raw data
+scale_fill_manual(values = c(
+"pretty happy" = "#41AB5D",  # Dark green
+"very happy" = "#00441B",    # Medium green
+"not too happy" = "#A1D99B"  # Light green
+)) +
+theme_minimal() +
+labs(
+title = "Number of Children by Happiness Level",
+x = "Happiness Level",
+y = "Number of Children",
+fill = "Happiness Level"
+) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+plot.title = element_text(face = "bold", hjust = 0.5),  # Bold and center the title
+legend.title = element_text(face = "bold"),  # Bold legend title
+panel.grid.major = element_blank(),  # Remove major gridlines
+panel.grid.minor = element_blank()   # Remove minor gridlines
+)
+#| echo: false
+#| warning: false
+#| label: fig-Childs
+#| fig-cap: Distribution of the Number of Children by Happiness Level
+# Filter out non-finite values (NA or Inf)
+data <- data %>%
+filter(!is.na(childs), is.finite(childs))  # Remove NA or infinite values
+# Create a violin plot with jittered points
+ggplot(data, aes(x = happy, y = childs, fill = happy)) +
+geom_violin(trim = TRUE, alpha = 0.7) +  # Violin plot to show distribution
+geom_jitter(width = 0.2, alpha = 0.4, color = "black", size = 1) +  # Add jitter points for raw data
+scale_fill_manual(values = c(
+"pretty happy" = "#41AB5D",  # Dark green
+"very happy" = "#00441B",    # Medium green
+"not too happy" = "#A1D99B"  # Light green
+)) +
+theme_minimal() +
+labs(
+x = "Happiness Level",
+y = "Number of Children",
+fill = "Happiness Level"
+) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+plot.title = element_text(face = "bold", hjust = 0.5),  # Bold and center the title
+legend.title = element_text(face = "bold"),  # Bold legend title
+panel.grid.major = element_blank(),  # Remove major gridlines
+panel.grid.minor = element_blank()   # Remove minor gridlines
+)
+#| echo: false
+#| warning: false
+#| label: fig-Marital-Status
+#| fig-cap: "Happiness Levels Across Different Marital Statuses: Depicting the Distribution of Self-Reported Happiness Levels ('Very Happy', 'Pretty Happy', 'Not Too Happy') by Marital Status Categories"
+# Filter out rows with NA values in 'happy' or 'marital'
+data <- data %>%
+filter(!is.na(happy), !is.na(marital)) %>%  # Exclude rows with NA in 'happy' or 'marital'
+mutate(
+happy = as.factor(happy),
+marital = as.factor(marital)
+)
+# Plot: Happiness Distribution By Marital Status
+ggplot(data, aes(x = marital, fill = happy)) +
+geom_bar(position = "dodge") +
+scale_fill_manual(values = c(
+"pretty happy" = "#41AB5D",  # Dark green
+"very happy" = "#00441B",    # Medium green
+"not too happy" = "#A1D99B"  # Light green
+)) +
+theme_minimal() +
+labs(
+x = "Marital Status",
+y = "Count",
+fill = "Happiness Level"
+) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+plot.title = element_text(face = "bold", hjust = 0.5),  # Center and bold the title
+panel.grid.major = element_blank(),  # Remove gridlines
+panel.grid.minor = element_blank()
+)
+# 加载必要的包
+library(dplyr)
+# 加载数据
+data <- read.csv("cleaned_happiness_data.csv")
+# 加载必要的包
+library(dplyr)
+# 加载数据
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# 检查数据
+str(data)
+summary(data)
+# 处理目标变量happy，将其转换为二分类 (例如: "very happy" vs 其他)
+data$happy_binary <- ifelse(data$happy == "very happy", 1, 0)
+# 检查是否有缺失值
+colSums(is.na(data))
+# 简单的数据清洗：移除含有缺失值的行
+clean_data <- na.omit(data)
+# 选择相关变量用于回归
+model_data <- clean_data %>%
+select(happy_binary, marital, childs, age, degree, sex, satjob, realrinc)
+# 将分类变量转化为因子
+model_data$marital <- as.factor(model_data$marital)
+model_data$degree <- as.factor(model_data$degree)
+model_data$sex <- as.factor(model_data$sex)
+model_data$satjob <- as.factor(model_data$satjob)
+# 拟合逻辑回归模型
+logit_model <- glm(happy_binary ~ marital + childs + age + degree + sex + satjob + realrinc,
+data = model_data, family = binomial())
+# 查看模型摘要
+summary(logit_model)
+# 可视化模型结果 (可选)
+library(ggplot2)
+library(broom)
+tidy_model <- tidy(logit_model, exponentiate = TRUE, conf.int = TRUE)
+ggplot(tidy_model, aes(x = term, y = estimate, ymin = conf.low, ymax = conf.high)) +
+geom_pointrange() +
+coord_flip() +
+theme_minimal() +
+labs(title = "Logistic Regression Coefficients", x = "Variables", y = "Odds Ratio")
+# 预测并评估模型
+clean_data$predicted <- predict(logit_model, newdata = clean_data, type = "response")
+clean_data$predicted_class <- ifelse(clean_data$predicted > 0.5, 1, 0)
+# 混淆矩阵
+table(clean_data$happy_binary, clean_data$predicted_class)
+# 计算模型的准确率
+accuracy <- mean(clean_data$happy_binary == clean_data$predicted_class)
+print(paste("模型准确率:", round(accuracy, 3)))
+library(rpart)
+# 拟合决策树模型
+tree_model <- rpart(happy_binary ~ marital + childs + age + degree + sex + satjob + realrinc,
+data = data, method = "class")
+# 查看决策树结构
+print(tree_model)
+# 生成预测
+tree_pred <- predict(tree_model, newdata = data, type = "class")
+# 生成混淆矩阵
+tree_confusion <- table(Predicted = tree_pred, Actual = data$happy_binary)
+print(tree_confusion)
+# 计算准确率
+tree_accuracy <- sum(diag(tree_confusion)) / sum(tree_confusion)
+print(paste("决策树模型准确率:", round(tree_accuracy * 100, 2), "%"))
+# 加载必要的包
+library(rpart)
+library(rpart.plot)
+library(caret)  # 用于数据分割和评估
+# 加载数据
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# 数据清理：移除缺失值
+data_cleaned <- na.omit(data[, c("happy", "age", "childs", "degree", "sex", "satjob", "realrinc")])
+# 将目标变量转换为因子
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+# 对分类变量进行编码（如 degree、sex、satjob）
+data_cleaned$degree <- as.factor(data_cleaned$degree)
+data_cleaned$sex <- as.factor(data_cleaned$sex)
+data_cleaned$satjob <- as.factor(data_cleaned$satjob)
+# 数据分割：70%训练集，30%测试集
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# 构建分类树模型（使用所有变量）
+tree_model <- rpart(
+happy ~ age + childs + degree + sex + satjob + realrinc,
+data = trainData,
+method = "class",
+control = rpart.control(maxdepth = 5)  # 增加最大深度以捕捉更多模式
+)
+# 可视化分类树
+rpart.plot(
+tree_model,
+type = 2,
+extra = 104,
+fallen.leaves = TRUE,
+box.palette = "Blues",
+main = "Classification Tree with All Variables"
+)
+# 在测试集上进行预测
+predictions <- predict(tree_model, newdata = testData, type = "class")
+# 生成混淆矩阵
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+# 打印混淆矩阵和统计结果
+print(conf_matrix)
+# 提取关键信息（如准确率）
+cat("Model Accuracy: ", conf_matrix$overall['Accuracy'], "\n")
+# Load necessary packages
+library(rpart)
+library(rpart.plot)
+library(caret)  # For data splitting and evaluation
+# Load data
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# Data cleaning: Remove missing values
+data_cleaned <- na.omit(data[, c("happy", "age", "childs", "degree", "sex", "satjob", "realrinc")])
+# Convert the target variable to a factor
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+# Encode categorical variables (e.g., degree, sex, satjob)
+data_cleaned$degree <- as.factor(data_cleaned$degree)
+data_cleaned$sex <- as.factor(data_cleaned$sex)
+data_cleaned$satjob <- as.factor(data_cleaned$satjob)
+# Split data: 70% training set, 30% testing set
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# Build classification tree model (using all variables)
+tree_model <- rpart(
+happy ~ age + childs + degree + sex + satjob + realrinc,
+data = trainData,
+method = "class",
+control = rpart.control(maxdepth = 5)  # Increase depth to capture more patterns
+)
+# Visualize the classification tree
+rpart.plot(
+tree_model,
+type = 2,
+extra = 104,
+fallen.leaves = TRUE,
+box.palette = "Blues",
+main = "Classification Tree with All Variables"
+)
+# Make predictions on the testing set
+predictions <- predict(tree_model, newdata = testData, type = "class")
+# Generate confusion matrix
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+# Print confusion matrix and statistics
+print(conf_matrix)
+# Extract key information (e.g., accuracy)
+cat("Model Accuracy: ", conf_matrix$overall['Accuracy'], "\n")
+summary(tree_model)
+# 加载必要的包
+library(caret)  # 用于数据分割和评估
+library(dplyr)  # 数据清理与变换
+# 加载数据
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+# 数据清理：移除缺失值
+data_cleaned <- na.omit(data[, c("happy", "age", "childs", "degree", "sex", "satjob", "realrinc")])
+# 将目标变量转换为因子（以便处理多分类问题）
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+data_cleaned$degree <- as.factor(data_cleaned$degree)
+data_cleaned$sex <- as.factor(data_cleaned$sex)
+data_cleaned$satjob <- as.factor(data_cleaned$satjob)
+# 数据分割：70%训练集，30%测试集
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+# --- 构建逻辑回归模型 ---
+# 拟合多分类逻辑回归模型
+logistic_model <- multinom(happy ~ age + childs + degree + sex + satjob + realrinc, data = trainData)
+)install.packages('nnet')
+install.packages('nnet')

@@ -1,0 +1,52 @@
+#### Preamble ####
+# Purpose: To identify key factors influencing happiness levels using Logistic Regression.
+# Author: Shuheng (Jack) Zhou
+# Date: November 26 2024
+# Contact: shuhengzhou5@gmail.com
+# License: MIT
+# Pre-requisites: Cleaned datasets should be available.
+# Any other information needed? Make sure you are in the `starter_folder` R project.
+
+
+
+# 加载必要的包
+library(caret)  # 用于数据分割和评估
+library(dplyr)  # 数据清理与变换
+library(nnet)
+
+# 加载数据
+data <- read_parquet("data/02-analysis_data/cleaned_happiness_data.parquet")
+
+# 数据清理：移除缺失值
+data_cleaned <- na.omit(data[, c("happy", "age", "childs", "degree", "sex", "satjob", "realrinc")])
+
+# 将目标变量转换为因子（以便处理多分类问题）
+data_cleaned$happy <- as.factor(data_cleaned$happy)
+data_cleaned$degree <- as.factor(data_cleaned$degree)
+data_cleaned$sex <- as.factor(data_cleaned$sex)
+data_cleaned$satjob <- as.factor(data_cleaned$satjob)
+
+# 数据分割：70%训练集，30%测试集
+set.seed(42)
+trainIndex <- createDataPartition(data_cleaned$happy, p = 0.7, list = FALSE)
+trainData <- data_cleaned[trainIndex, ]
+testData <- data_cleaned[-trainIndex, ]
+
+# --- 构建逻辑回归模型 ---
+# 拟合多分类逻辑回归模型
+logistic_model <- multinom(happy ~ age + childs + degree + sex + satjob + realrinc, data = trainData)
+
+# 打印模型摘要
+summary(logistic_model)
+
+# --- 模型预测 ---
+# 在测试集上进行预测
+predictions <- predict(logistic_model, newdata = testData)
+
+# --- 模型评估 ---
+# 生成混淆矩阵
+conf_matrix <- confusionMatrix(predictions, testData$happy)
+print(conf_matrix)
+
+# 提取模型准确率
+cat("Model Accuracy: ", conf_matrix$overall['Accuracy'], "\n")
