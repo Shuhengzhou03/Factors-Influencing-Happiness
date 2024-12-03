@@ -2,9 +2,11 @@
 
 ## Overview
 
-The factors influencing individual happiness are crucial for understanding overall well-being and developing strategies to improve quality of life. Identifying the key predictors of happiness can provide significant insights into socio-economic and demographic dynamics. This study focuses on self-reported happiness levels, aiming to uncover how variables such as marital status, income, education, and job satisfaction contribute to well-being.
+Understanding the factors influencing individual happiness is essential for improving well-being and developing effective strategies to enhance quality of life. Identifying predictors of happiness helps clarify socio-economic and demographic patterns that shape people's experiences. This study examines self-reported happiness levels, focusing on how variables such as marital status, income, education, and job satisfaction impact well-being.
 
-We utilized a Bayesian logistic regression model to analyze the data, which was obtained from the [GSS Data Explorer](https://gssdataexplorer.norc.org/MyGSS), a comprehensive source of General Social Survey (GSS) data.
+We applied a Bayesian logistic regression model to analyze the data, sourced from the [GSS Data Explorer](https://gssdataexplorer.norc.org/MyGSS), which provides a detailed repository of General Social Survey (GSS) data.
+
+
 
 ## File Structure
 
