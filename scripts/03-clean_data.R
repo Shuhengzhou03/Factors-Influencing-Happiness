@@ -1,7 +1,7 @@
 #### Preamble ####
 # Purpose: Cleans the raw happiness survey data from the General Social Survey (GSS) for analysis.
 # Author: Shuheng (Jack) Zhou
-# Date: November 26 2024
+# Date: November 27 2024
 # Contact: shuhengzhou5@gmail.com
 # License: MIT
 # Pre-requisites: Have raw data downloaded in the data file
